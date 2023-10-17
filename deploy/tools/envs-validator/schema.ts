@@ -910,6 +910,9 @@ const schema = yup
 
     // Misc
     NEXT_PUBLIC_USE_NEXT_JS_PROXY: yup.boolean(),
+    NEXT_PUBLIC_ALGOLIA_APP_ID: yup.string(),
+    NEXT_PUBLIC_ALGOLIA_API_KEY: yup.string(),
+    NEXT_PUBLIC_ALGOLIA_INDEX_NAME: yup.string(),
   })
   .concat(accountSchema)
   .concat(adsBannerSchema)

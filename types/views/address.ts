@@ -6,6 +6,7 @@ export const IDENTICON_TYPES = [
   'gradient_avatar',
   'blockie',
   'nouns',
+  'universal_profile',
 ] as const;
 
 export type IdenticonType = ArrayElement<typeof IDENTICON_TYPES>;
