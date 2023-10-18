@@ -907,6 +907,7 @@ const schema = yup
     NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN: yup.string(),
     NEXT_PUBLIC_GROWTH_BOOK_CLIENT_KEY: yup.string(),
     NEXT_PUBLIC_ROLLBAR_CLIENT_TOKEN: yup.string(),
+    NEXT_PUBLIC_FAVICON_GENERATOR_API_KEY: yup.string(),
 
     // Misc
     NEXT_PUBLIC_USE_NEXT_JS_PROXY: yup.boolean(),
