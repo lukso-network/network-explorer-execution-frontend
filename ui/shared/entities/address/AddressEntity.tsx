@@ -12,10 +12,11 @@ import { useSettingsContext } from 'lib/contexts/settings';
 import Skeleton from 'ui/shared/chakra/Skeleton';
 import * as EntityBase from 'ui/shared/entities/base/components';
 
+import config from '../../../../configs/app';
 import { distributeEntityProps, getIconProps } from '../base/utils';
 import AddressEntityContentProxy from './AddressEntityContentProxy';
 import AddressIdenticon from './AddressIdenticon';
-
+import makeUniversalProfileIdenticon from './IdenticonUniversalProfile';
 type LinkProps = EntityBase.LinkBaseProps & Pick<EntityProps, 'address'>;
 
 const getDisplayedAddress = (address: AddressProp, altHash?: string) => {
@@ -37,7 +38,7 @@ const Link = chakra((props: LinkProps) => {
 
 type IconProps = Pick<EntityProps, 'address' | 'isSafeAddress'> & EntityBase.IconBaseProps;
 
-const Icon = (props: IconProps) => {
+const Icon = async(props: IconProps) => {
   if (props.noIcon) {
     return null;
   }
@@ -65,6 +66,25 @@ const Icon = (props: IconProps) => {
     const isVerified = isProxy ? props.address.is_verified && props.address.implementations?.every(({ name }) => Boolean(name)) : props.address.is_verified;
     const contractIconName: EntityBase.IconBaseProps['name'] = props.address.is_verified ? 'contracts/verified' : 'contracts/regular';
     const label = (isVerified ? 'verified ' : '') + (isProxy ? 'proxy contract' : 'contract');
+
+    if (config.UI.views.address.identiconType === 'universal_profile') {
+      let upUrl: string | undefined = '';
+
+      await makeUniversalProfileIdenticon(props.address.hash)
+        .then(data => {
+          if (data !== undefined) {
+            upUrl = data;
+            // console.log(`Inside of then: ${ upUrl }`)
+          }
+        });
+      // console.log(`Outside of then: ${ upUrl }`)
+
+      if (process.browser) {
+        import('@lukso/web-components/dist/components/lukso-profile');
+
+        return <lukso-profile profile-url={ upUrl }></lukso-profile>;
+      }
+    }
 
     return (
       <Tooltip label={ label.slice(0, 1).toUpperCase() + label.slice(1) }>

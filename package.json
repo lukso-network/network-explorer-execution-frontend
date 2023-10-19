@@ -48,6 +48,7 @@
     "@growthbook/growthbook-react": "0.21.0",
     "@helia/verified-fetch": "2.0.1",
     "@hypelab/sdk-react": "^1.0.0",
+    "@lukso/web-components": "^1.47.1",
     "@metamask/post-message-stream": "^7.0.0",
     "@metamask/providers": "^10.2.1",
     "@monaco-editor/react": "^4.4.6",
