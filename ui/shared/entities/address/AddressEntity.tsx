@@ -16,6 +16,10 @@ import { distributeEntityProps, getIconProps } from '../base/utils';
 import AddressEntityContentProxy from './AddressEntityContentProxy';
 import AddressIdenticon from './AddressIdenticon';
 import makeUniversalProfileIdenticon from './IdenticonUniversalProfile';
+if (process.browser) {
+  import('@lukso/web-components/dist/components/lukso-profile');
+}
+
 type LinkProps = EntityBase.LinkBaseProps & Pick<EntityProps, 'address'>;
 
 const getDisplayedAddress = (address: AddressProp, altHash?: string) => {
@@ -77,8 +81,18 @@ const Icon = (props: IconProps) => {
     const contractIconName: EntityBase.IconBaseProps['name'] = props.address.is_verified ? 'contracts/verified' : 'contracts/regular';
     const label = (isVerified ? 'verified ' : '') + (isProxy ? 'proxy contract' : 'contract');
 
-    if (upUrl !== '') {
-      return <lukso-profile size="x-small" profile-url={ upUrl }></lukso-profile>;
+    if (upUrl !== '' && process.browser) {
+      console.log(`Generating profile for url ${ upUrl } and ${ props.address.hash }`);
+      return (
+        <Box mr={ 2 } ml={ 1 }>
+          <lukso-profile
+            size="x-small"
+            profile-url={ upUrl }
+            profile-address={ props.address.hash }
+            has-identicon={ true }
+          ></lukso-profile>
+        </Box>
+      );
     }
 
     return (
