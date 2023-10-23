@@ -1,6 +1,6 @@
 import type { As } from '@chakra-ui/react';
 import { Box, Flex, Tooltip, chakra, VStack } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import type { AddressParam } from 'types/api/addressParams';
 
@@ -12,7 +12,6 @@ import { useSettingsContext } from 'lib/contexts/settings';
 import Skeleton from 'ui/shared/chakra/Skeleton';
 import * as EntityBase from 'ui/shared/entities/base/components';
 
-import config from '../../../../configs/app';
 import { distributeEntityProps, getIconProps } from '../base/utils';
 import AddressEntityContentProxy from './AddressEntityContentProxy';
 import AddressIdenticon from './AddressIdenticon';
@@ -38,7 +37,18 @@ const Link = chakra((props: LinkProps) => {
 
 type IconProps = Pick<EntityProps, 'address' | 'isSafeAddress'> & EntityBase.IconBaseProps;
 
-const Icon = async(props: IconProps) => {
+const Icon = (props: IconProps) => {
+  const [ upUrl, setUpUrl ] = useState('');
+  useEffect(() => {
+    (async() => {
+      const result = await makeUniversalProfileIdenticon(props.address.hash);
+
+      setUpUrl(result);
+
+      return;
+    })();
+  });
+
   if (props.noIcon) {
     return null;
   }
@@ -67,23 +77,8 @@ const Icon = async(props: IconProps) => {
     const contractIconName: EntityBase.IconBaseProps['name'] = props.address.is_verified ? 'contracts/verified' : 'contracts/regular';
     const label = (isVerified ? 'verified ' : '') + (isProxy ? 'proxy contract' : 'contract');
 
-    if (config.UI.views.address.identiconType === 'universal_profile') {
-      let upUrl: string | undefined = '';
-
-      await makeUniversalProfileIdenticon(props.address.hash)
-        .then(data => {
-          if (data !== undefined) {
-            upUrl = data;
-            // console.log(`Inside of then: ${ upUrl }`)
-          }
-        });
-      // console.log(`Outside of then: ${ upUrl }`)
-
-      if (process.browser) {
-        import('@lukso/web-components/dist/components/lukso-profile');
-
-        return <lukso-profile profile-url={ upUrl }></lukso-profile>;
-      }
+    if (upUrl !== '') {
+      return <lukso-profile size="x-small" profile-url={ upUrl }></lukso-profile>;
     }
 
     return (
