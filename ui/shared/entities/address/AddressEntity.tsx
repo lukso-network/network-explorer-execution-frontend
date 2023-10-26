@@ -1,6 +1,6 @@
 import type { As } from '@chakra-ui/react';
 import { Box, Flex, Tooltip, chakra, VStack } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import type { AddressParam } from 'types/api/addressParams';
 
@@ -15,7 +15,7 @@ import * as EntityBase from 'ui/shared/entities/base/components';
 import { distributeEntityProps, getIconProps } from '../base/utils';
 import AddressEntityContentProxy from './AddressEntityContentProxy';
 import AddressIdenticon from './AddressIdenticon';
-import makeUniversalProfileIdenticon from './IdenticonUniversalProfile';
+import { IdenticonUniversalProfile } from './IdenticonUniversalProfileQuery';
 if (process.browser) {
   import('@lukso/web-components/dist/components/lukso-profile');
 }
@@ -42,17 +42,6 @@ const Link = chakra((props: LinkProps) => {
 type IconProps = Pick<EntityProps, 'address' | 'isSafeAddress'> & EntityBase.IconBaseProps;
 
 const Icon = (props: IconProps) => {
-  const [ upUrl, setUpUrl ] = useState('');
-  useEffect(() => {
-    (async() => {
-      const result = await makeUniversalProfileIdenticon(props.address.hash);
-
-      setUpUrl(result);
-
-      return;
-    })();
-  });
-
   if (props.noIcon) {
     return null;
   }
@@ -81,21 +70,7 @@ const Icon = (props: IconProps) => {
     const contractIconName: EntityBase.IconBaseProps['name'] = props.address.is_verified ? 'contracts/verified' : 'contracts/regular';
     const label = (isVerified ? 'verified ' : '') + (isProxy ? 'proxy contract' : 'contract');
 
-    if (upUrl !== '' && process.browser) {
-      console.log(`Generating profile for url ${ upUrl } and ${ props.address.hash }`);
-      return (
-        <Box mr={ 2 } ml={ 1 }>
-          <lukso-profile
-            size="x-small"
-            profile-url={ upUrl }
-            profile-address={ props.address.hash }
-            has-identicon={ true }
-          ></lukso-profile>
-        </Box>
-      );
-    }
-
-    return (
+    const contractIcon = (
       <Tooltip label={ label.slice(0, 1).toUpperCase() + label.slice(1) }>
         <span>
           <EntityBase.Icon
@@ -107,6 +82,12 @@ const Icon = (props: IconProps) => {
         </span>
       </Tooltip>
     );
+
+    if (process.browser) {
+      return <IdenticonUniversalProfile address={ props.address.hash } fallbackIcon={ contractIcon }/>;
+    }
+
+    return contractIcon;
   }
 
   return (
