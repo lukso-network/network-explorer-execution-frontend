@@ -38,7 +38,7 @@ const moduleExports = {
   redirects,
   headers,
   output: 'standalone',
-  productionBrowserSourceMaps: true
+  productionBrowserSourceMaps: true,
 };
 
 module.exports = withRoutes(moduleExports);
