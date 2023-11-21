@@ -13,22 +13,20 @@ const moduleExports = {
     'swagger-ui-react',
   ],
   reactStrictMode: true,
-  webpack(config, { webpack }) {
+  webpack(config, {webpack}) {
     config.plugins.push(
       new webpack.DefinePlugin({
         __SENTRY_DEBUG__: false,
         __SENTRY_TRACING__: false,
-      }),
-    );
-    config.module.rules.push(
-      {
-        test: /\.svg$/,
-        use: [ '@svgr/webpack' ],
-      },
-    );
-    config.resolve.fallback = { fs: false, net: false, tls: false };
+      })
+    )
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    })
+    config.resolve.fallback = {fs: false, net: false, tls: false}
 
-    return config;
+    return config
   },
   // NOTE: all config functions should be static and not depend on any environment variables
   // since all variables will be passed to the app only at runtime and there is now way to change Next.js config at this time
@@ -38,7 +36,7 @@ const moduleExports = {
   redirects,
   headers,
   output: 'standalone',
-  productionBrowserSourceMaps: process.env.GENERATE_SOURCEMAPS === 'true',
-};
+  productionBrowserSourceMaps: true,
+}
 
 module.exports = withRoutes(moduleExports);
