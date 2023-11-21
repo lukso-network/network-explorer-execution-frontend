@@ -22,7 +22,7 @@ const HashStringShorten = ({ hash, isTooltipDisabled, as = 'span', type }: Props
     if (identiconType === undefined) {
       return undefined;
     }
-    if (identiconType.includes('universal_profile') && hash.includes('#')) {
+    if (identiconType.includes('universal_profile') && hash.includes(' (')) {
       setShortenedString(shortenUniversalProfile(hash));
     }
   }, [ hash ]);
