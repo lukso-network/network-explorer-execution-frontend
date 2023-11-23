@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import shortenString from 'lib/shortenString';
 
-import { getEnvValue } from '../../configs/app/utils';
+import { isUniversalProfileEnabled } from '../../lib/api/isUniversalProfileEnabled';
 import shortenUniversalProfile from '../../lib/shortenUniversalProfile';
 
 interface Props {
@@ -18,11 +18,7 @@ const HashStringShorten = ({ hash, isTooltipDisabled, as = 'span', type }: Props
   const charNumber = type === 'long' ? 16 : 8;
   const [ shortenedString, setShortenedString ] = useState(shortenString(hash, charNumber));
   useEffect(() => {
-    const identiconType = getEnvValue('NEXT_PUBLIC_VIEWS_ADDRESS_IDENTICON_TYPE');
-    if (identiconType === undefined) {
-      return undefined;
-    }
-    if (identiconType.includes('universal_profile') && hash.includes(' (')) {
+    if (isUniversalProfileEnabled() && hash.includes(' (')) {
       setShortenedString(shortenUniversalProfile(hash));
     }
   }, [ hash ]);
