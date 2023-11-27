@@ -3,7 +3,7 @@ import type { SearchResultItem } from 'types/client/search';
 
 import config from 'configs/app';
 
-export type ApiCategory = 'token' | 'nft' | 'address' | 'public_tag' | 'transaction' | 'block' | 'user_operation' | 'blob' | 'domain';
+export type ApiCategory = 'token' | 'nft' | 'address' | 'public_tag' | 'transaction' | 'block' | 'user_operation' | 'blob' | 'domain' | 'universal_profile';
 export type Category = ApiCategory | 'app';
 
 export type ItemsCategoriesMap =
@@ -23,6 +23,7 @@ export const searchCategories: Array<{ id: Category; title: string }> = [
   { id: 'public_tag', title: 'Public tags' },
   { id: 'transaction', title: 'Transactions' },
   { id: 'block', title: 'Blocks' },
+  { id: 'universal_profile', title: 'LUKSO Universal Profiles' },
 ];
 
 if (config.features.userOps.isEnabled) {
@@ -48,6 +49,7 @@ export const searchItemTitles: Record<Category, { itemTitle: string; itemTitleSh
   block: { itemTitle: 'Block', itemTitleShort: 'Block' },
   user_operation: { itemTitle: 'User operation', itemTitleShort: 'User op' },
   blob: { itemTitle: 'Blob', itemTitleShort: 'Blob' },
+  universal_profile: { itemTitle: 'Universal Profile', itemTitleShort: 'UP' },
 };
 
 export function getItemCategory(item: SearchResultItem | SearchResultAppItem): Category | undefined {
