@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 
 import type { ItemsProps } from './types';
-import type { SearchResultAddressOrContract } from 'types/api/search';
+import type { SearchResultAddressOrContractOrUniversalProfile } from 'types/api/search';
 
 import { toBech32Address } from 'lib/address/bech32';
 import dayjs from 'lib/date/dayjs';
@@ -15,7 +15,7 @@ import HashStringShortenDynamic from 'ui/shared/HashStringShortenDynamic';
 
 import { formattedLuksoName, getUniversalProfile } from '../../../shared/entities/address/IdenticonUniversalProfileQuery';
 
-const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: ItemsProps<SearchResultAddressOrContract>) => {
+const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: ItemsProps<SearchResultAddressOrContractOrUniversalProfile>) => {
   const shouldHighlightHash = ADDRESS_REGEXP.test(searchTerm);
   const hash = data.filecoin_robust_address || (addressFormat === 'bech32' ? toBech32Address(data.address) : data.address);
   const queryClient = useQueryClient();

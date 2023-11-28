@@ -50,6 +50,22 @@ export interface SearchResultDomain {
   };
 }
 
+export interface SearchResultAddressOrContractOrUniversalProfile {
+  type: 'address' | 'contract' | 'universal_profile';
+  name: string | null;
+  address: string;
+  is_smart_contract_verified: boolean;
+  certified?: true;
+  filecoin_robust_address?: string | null;
+  url?: string; // not used by the frontend, we build the url ourselves
+  ens_info?: {
+    address_hash: string;
+    expiry_date?: string;
+    name: string;
+    names_count: number;
+  };
+}
+
 export interface SearchResultLabel {
   type: 'label';
   address: string;
@@ -88,15 +104,15 @@ export interface SearchResultUserOp {
   url?: string; // not used by the frontend, we build the url ourselves
 }
 
-export interface SearchResultUniversalProfile {
-  type: 'universal_profile';
-  name: string | null;
-  address: string;
-}
-
 export type SearchResultItem =
-    SearchResultToken | SearchResultAddressOrContract | SearchResultBlock | SearchResultTx | SearchResultLabel | SearchResultUniversalProfile |
-SearchResultBlob | SearchResultDomain;
+    SearchResultToken |
+    SearchResultAddressOrContract |
+    SearchResultAddressOrContractOrUniversalProfile |
+    SearchResultBlock |
+    SearchResultTx |
+    SearchResultLabel |
+    SearchResultBlob | 
+    SearchResultDomain;
 
 export interface SearchResult {
   items: Array<SearchResultItem>;

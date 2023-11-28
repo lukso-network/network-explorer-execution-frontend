@@ -85,5 +85,8 @@ export function getItemCategory(item: SearchResultItem | SearchResultAppItem): C
     case 'ens_domain': {
       return 'domain';
     }
+    case 'universal_profile': {
+      return 'universal_profile';
+    }
   }
 }
