@@ -7,6 +7,7 @@ import type { SearchResultItem } from '../../../types/api/search';
 import useApiQuery from 'lib/api/useApiQuery';
 import useDebounce from 'lib/hooks/useDebounce';
 
+import useLSP7Query from '../../../lib/api/useLSP7Query';
 import useUniversalProfileQuery from '../../../lib/api/useUniversalProfileQuery';
 
 export default function useQuickSearchQuery() {
@@ -34,13 +35,19 @@ export default function useQuickSearchQuery() {
     queryOptions: { enabled: debouncedSearchTerm.trim().length > 0 },
   });
 
+  const lspQuery = useLSP7Query('lsp7_asset', {
+    queryParams: { q: debouncedSearchTerm },
+    queryOptions: { enabled: debouncedSearchTerm.trim().length > 0 },
+  });
+
   const query = useQuery({
-    queryKey: [ 'merged_query', quickSearchQuery, upQuery ],
+    queryKey: [ 'merged_query', quickSearchQuery, upQuery, lspQuery ],
     queryFn: () => {
       const q1 = quickSearchQuery.data as Array<SearchResultItem>;
       const q2 = upQuery.data as Array<SearchResultItem>;
+      const q3 = lspQuery.data as Array<SearchResultItem>;
 
-      return [ ...q1, ...q2 ];
+      return [ ...q1, ...q2, ...q3 ];
     },
   });
 

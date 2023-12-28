@@ -521,6 +521,9 @@ export const RESOURCES = {
   universal_profile: {
     path: '',
   },
+  lsp7_asset: {
+    path: '',
+  },
 
   // API V1
   csv_export_txs: {
@@ -639,6 +642,7 @@ Q extends 'address_logs' ? LogsResponseAddress :
 Q extends 'address_tokens' ? AddressTokensResponse :
 Q extends 'address_withdrawals' ? AddressWithdrawalsResponse :
 Q extends 'universal_profile' ? Array<SearchResultItem> :
+Q extends 'lsp7_asset' ? Array<SearchResultItem> :
 Q extends 'token' ? TokenInfo :
 Q extends 'token_verified_info' ? TokenVerifiedInfo :
 Q extends 'token_counters' ? TokenCounters :

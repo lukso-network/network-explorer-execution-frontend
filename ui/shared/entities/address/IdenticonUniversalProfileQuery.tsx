@@ -3,7 +3,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 
-import type { UniversalProfileProxyResponse } from '../../../../types/api/universalProfile';
+import type { LSP3Response } from '../../../../types/api/lsp';
 
 import { getEnvValue } from '../../../../configs/app/utils';
 import { isUniversalProfileEnabled } from '../../../../lib/api/isUniversalProfileEnabled';
@@ -21,7 +21,7 @@ export const getUniversalProfile = async(address: string, queryClient: QueryClie
   if (!isUniversalProfileEnabled()) {
     return undefined;
   }
-  const query = queryClient.getQueryData<UniversalProfileProxyResponse>([ 'universalProfile', { address: address } ]);
+  const query = queryClient.getQueryData<LSP3Response>([ 'universalProfile', { address: address } ]);
   if (query !== undefined) {
     return query;
   }
@@ -36,7 +36,7 @@ export const getUniversalProfile = async(address: string, queryClient: QueryClie
       try {
         const resp = await fetch(url);
         const json = await resp.json();
-        return json as UniversalProfileProxyResponse;
+        return json as LSP3Response;
       } catch (err) {
         return undefined;
       }
@@ -45,7 +45,7 @@ export const getUniversalProfile = async(address: string, queryClient: QueryClie
 };
 
 export const IdenticonUniversalProfile: React.FC<Props> = ({ address, fallbackIcon }) => {
-  const [ up, setUp ] = useState({} as UniversalProfileProxyResponse);
+  const [ up, setUp ] = useState({} as LSP3Response);
   const queryClient = useQueryClient();
   useEffect(() => {
     (async() => {

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import type { LSP3Response } from '../../types/api/lsp';
-import type { SearchResultAddressOrContractOrUniversalProfile } from '../../types/api/search';
+import type { LSP7Response } from '../../types/api/lsp';
+import type { SearchResultToken } from '../../types/api/search';
 
 import type { Params as FetchParams } from 'lib/hooks/useFetch';
 
@@ -15,20 +15,28 @@ export interface Params<R extends ResourceName> {
   fetchParams?: Pick<FetchParams, 'body' | 'method' | 'signal'>;
 }
 
-export default function useUniversalProfileApiFetch() {
+export default function useLSP7ApiFetch() {
   return React.useCallback(async(queryParams: string,
   ) => {
     if (!isUniversalProfileEnabled()) {
-      return [] as Array<SearchResultAddressOrContractOrUniversalProfile>;
+      return [] as Array<SearchResultToken>;
     }
     try {
-      const { hits } = await algoliaLSPSearch.profile.search(queryParams);
-      return hits.map<SearchResultAddressOrContractOrUniversalProfile>((hit) => {
-        const hitAsUp = hit as unknown as LSP3Response;
+      const { hits } = await algoliaLSPSearch.asset.search(queryParams);
+      return hits.map<SearchResultToken>((hit) => {
+        const lsp = hit as unknown as LSP7Response;
         return {
-          type: 'universal_profile',
-          name: hitAsUp.hasProfileName ? hitAsUp.LSP3Profile.name : null,
-          address: hit.objectID,
+          type: 'token',
+          name: lsp.name,
+          symbol: lsp.symbol,
+          address: lsp.address,
+          token_url: lsp.linkUrl,
+          address_url: lsp.linkUrl,
+          icon_url: null,
+          token_type: 'LSP7',
+          exchange_rate: null,
+          total_supply: '0',
+          is_verified_via_admin_panel: false,
           is_smart_contract_verified: false,
         };
       });
