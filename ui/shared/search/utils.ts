@@ -1,9 +1,7 @@
 import type { SearchResultItem } from 'types/api/search';
 import type { MarketplaceAppOverview } from 'types/client/marketplace';
 
-import { isUniversalProfileEnabled } from '../../../lib/api/isUniversalProfileEnabled';
-
-export type ApiCategory = 'token' | 'nft' | 'address' | 'public_tag' | 'transaction' | 'block' | 'universal_profile';
+export type ApiCategory = 'token' | 'nft' | 'address' | 'public_tag' | 'transaction' | 'block' | 'universal_profile' | 'LSP7';
 export type Category = ApiCategory | 'app';
 
 export type ItemsCategoriesMap =
@@ -17,8 +15,9 @@ export type SearchResultAppItem = {
 
 export const searchCategories: Array<{id: Category; title: string }> = [
   { id: 'app', title: 'Apps' },
-  { id: 'token', title: isUniversalProfileEnabled() ? 'Tokens (ERC-20 & LSP7)' : 'Tokens (ERC-20)' },
-  { id: 'nft', title: isUniversalProfileEnabled() ? 'NFTs (ERC-721 & 1155 & LSP8)' : 'NFTs (ERC-721 & 1155)' },
+  { id: 'token', title: 'Tokens (ERC-20)' },
+  { id: 'nft', title: 'NFTs (ERC-721 & 1155)' },
+  { id: 'LSP7', title: 'Digital Assets (LSP7)' },
   { id: 'address', title: 'Addresses' },
   { id: 'public_tag', title: 'Public tags' },
   { id: 'transaction', title: 'Transactions' },
@@ -35,6 +34,7 @@ export const searchItemTitles: Record<Category, { itemTitle: string; itemTitleSh
   transaction: { itemTitle: 'Transaction', itemTitleShort: 'Txn' },
   block: { itemTitle: 'Block', itemTitleShort: 'Block' },
   universal_profile: { itemTitle: 'Universal Profile', itemTitleShort: 'UP' },
+  LSP7: { itemTitle: 'LSP7 Digital asset', itemTitleShort: 'LSP7' },
 };
 
 export function getItemCategory(item: SearchResultItem | SearchResultAppItem): Category | undefined {
@@ -44,10 +44,14 @@ export function getItemCategory(item: SearchResultItem | SearchResultAppItem): C
       return 'address';
     }
     case 'token': {
-      if (item.token_type === 'ERC-20') {
-        return 'token';
+      switch (item.token_type) {
+        case 'ERC-20':
+          return 'token';
+        case 'LSP7':
+          return 'LSP7';
+        default:
+          return 'nft';
       }
-      return 'nft';
     }
     case 'block': {
       return 'block';

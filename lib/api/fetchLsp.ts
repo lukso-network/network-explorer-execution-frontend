@@ -1,6 +1,7 @@
 import type { LSPResponse } from '../../types/api/lsp';
 
 import { getEnvValue } from '../../configs/app/utils';
+// import { BrowserProvider, Contract } from 'ethers';
 
 export const fetchLsp = async <T extends LSPResponse>(address: string) => {
   const upApiUrl = getEnvValue('NEXT_PUBLIC_UNIVERSAL_PROFILES_API_URL') || '';
@@ -15,3 +16,6 @@ export const fetchLsp = async <T extends LSPResponse>(address: string) => {
     return undefined;
   }
 };
+
+// const provider = new BrowserProvider(window.lukso);
+// const contract = new Contract('', '', '');

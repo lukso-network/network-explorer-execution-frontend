@@ -39,4 +39,8 @@ declare global {
       'lukso-profile': WebComponent<LuksoProfile>;
     }
   }
+
+  interface Window {
+    lukso?: any;  // eslint-disable-line
+  }
 }

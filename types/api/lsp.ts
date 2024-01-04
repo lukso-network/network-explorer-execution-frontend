@@ -15,6 +15,7 @@ export type LSP3Response = {
 export type LSP7Response = {
   address: string;
   updatedAtBlockNameAndSymbol: number;
+  type: string;
   symbol: string;
   hasTokenSymbol: boolean;
   name: string;

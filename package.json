@@ -55,6 +55,7 @@
     "dayjs": "^1.11.5",
     "dom-to-image": "^2.6.0",
     "ethereum-blockies-base64": "^1.0.2",
+    "ethers": "^6.9.2",
     "framer-motion": "^6.5.1",
     "gradient-avatar": "^1.0.2",
     "graphiql": "^2.2.0",

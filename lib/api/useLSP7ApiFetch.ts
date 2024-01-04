@@ -23,8 +23,14 @@ export default function useLSP7ApiFetch() {
     }
     try {
       const { hits } = await algoliaLSPSearch.asset.search(queryParams);
-      return hits.map<SearchResultToken>((hit) => {
-        const lsp = hit as unknown as LSP7Response;
+
+      return hits
+        .filter((hit) => {
+          const lsp = hit as LSP7Response;
+          return lsp.type === 'LSP7DigitalAsset';
+        })
+        .map<SearchResultToken>((hit) => {
+        const lsp = hit as LSP7Response;
         return {
           type: 'token',
           name: lsp.name,
@@ -32,10 +38,10 @@ export default function useLSP7ApiFetch() {
           address: lsp.address,
           token_url: lsp.linkUrl,
           address_url: lsp.linkUrl,
-          icon_url: null,
+          icon_url: '',
           token_type: 'LSP7',
           exchange_rate: null,
-          total_supply: '0',
+          total_supply: null,
           is_verified_via_admin_panel: false,
           is_smart_contract_verified: false,
         };
