@@ -34,6 +34,7 @@
     "@chakra-ui/theme-tools": "^2.0.18",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@lukso/lsp-smart-contracts": "^0.14.0",
     "@lukso/web-components": "^1.47.1",
     "@metamask/post-message-stream": "^7.0.0",
     "@metamask/providers": "^10.2.1",

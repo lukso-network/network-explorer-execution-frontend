@@ -2,7 +2,7 @@ import { Box, Grid, Link, Skeleton } from '@chakra-ui/react';
 import type { UseQueryResult } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useRouter } from 'next/router';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { scroller } from 'react-scroll';
 
 import type { TokenInfo } from 'types/api/token';
@@ -16,6 +16,7 @@ import DetailsInfoItem from 'ui/shared/DetailsInfoItem';
 import DetailsSponsoredItem from 'ui/shared/DetailsSponsoredItem';
 import TruncatedValue from 'ui/shared/TruncatedValue';
 
+import { getLSP7TokenData } from '../../lib/api/lsp';
 import TokenNftMarketplaces from './TokenNftMarketplaces';
 
 interface Props {
@@ -25,6 +26,14 @@ interface Props {
 const TokenDetails = ({ tokenQuery }: Props) => {
   const router = useRouter();
   const hash = router.query.hash?.toString();
+
+  useEffect(() => {
+    (async() => {
+      if (hash) {
+        await getLSP7TokenData(hash);
+      }
+    })();
+  });
 
   const tokenCountersQuery = useApiQuery('token_counters', {
     pathParams: { hash },
