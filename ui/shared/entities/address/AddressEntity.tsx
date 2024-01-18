@@ -134,6 +134,9 @@ const Content = chakra((props: ContentProps) => {
 
   useEffect(() => { // this causes a sort of loading state where the address suddenly switches to up name - needs fix?
     (async() => {
+      if (!props.address.is_contract) {
+        return;
+      }
       const upData = await getUniversalProfile(props.address.hash, queryClient);
       if (upData === undefined) {
         return;
@@ -142,7 +145,7 @@ const Content = chakra((props: ContentProps) => {
         setUpName(upData.LSP3Profile.name);
       }
     })();
-  }, [ props.address.hash, queryClient ]);
+  }, [ props, queryClient ]);
 
   const displayedName = upName !== '' ? formattedLuksoName(props.address.hash, upName) : props.address.hash;
   return (
