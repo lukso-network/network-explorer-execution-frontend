@@ -1,5 +1,7 @@
 import type { Counter, HomeStats, StatsChartsSection } from 'types/api/stats';
 
+import { currencyUnits } from '../lib/units';
+
 export const HOMEPAGE_STATS: HomeStats = {
   average_block_time: 14346,
   coin_price: '1807.68',
@@ -48,14 +50,14 @@ export const STATS_CHARTS_SECTION: StatsChartsSection = {
     {
       id: 'chart_0',
       title: 'Average transaction fee',
-      description: 'The average amount in ETH spent per transaction',
-      units: 'ETH',
+      description: `The average amount in ${ currencyUnits.ether } spent per transaction`,
+      units: currencyUnits.ether,
     },
     {
       id: 'chart_1',
       title: 'Transactions fees',
       description: 'Amount of tokens paid as fees',
-      units: 'ETH',
+      units: currencyUnits.ether,
     },
     {
       id: 'chart_2',
