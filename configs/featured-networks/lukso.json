@@ -3,12 +3,12 @@
     "title": "LUKSO Mainnet",
     "url": "https://explorer.execution.mainnet.lukso.network/",
     "group": "Mainnets",
-    "icon": "https://lukso.network/assets/images/logos/LUKSO_icon.svg"
+    "icon": "https://raw.githubusercontent.com/lukso-network/network-explorer-execution-frontend/lukso/icons/networks/lukso/icon-lukso.svg"
   },
   {
     "title": "LUKSO Testnet",
     "url": "https://explorer.execution.testnet.lukso.network/",
     "group": "Testnets",
-    "icon": "https://lukso.network/assets/images/logos/LUKSO_icon.svg"
+    "icon": "https://raw.githubusercontent.com/lukso-network/network-explorer-execution-frontend/lukso/icons/networks/lukso/icon-lukso.svg"
   }
 ]
