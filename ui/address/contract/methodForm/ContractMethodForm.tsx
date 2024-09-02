@@ -73,7 +73,7 @@ const ContractMethodForm = <T extends SmartContractMethod>({ data, onSubmit, res
     return [
       ...('inputs' in data ? data.inputs : []),
       ...('stateMutability' in data && data.stateMutability === 'payable' ? [ {
-        name: `Send native ${ config.chain.currency.symbol || 'coin' }`,
+        name: `Send native ${ config.chain.currency.symbol || 'coin' } in WEI`,
         type: 'uint256' as const,
         internalType: 'uint256' as const,
         fieldType: 'native_coin' as const,
