@@ -7,6 +7,7 @@ import { scroller, Element } from 'react-scroll';
 import type { SearchResultItem } from 'types/api/search';
 
 import useIsMobile from 'lib/hooks/useIsMobile';
+import * as regexp from 'lib/regexp';
 import useMarketplaceApps from 'ui/marketplace/useMarketplaceApps';
 import TextAd from 'ui/shared/ad/TextAd';
 import ContentLoader from 'ui/shared/ContentLoader';
@@ -14,6 +15,7 @@ import type { ApiCategory, ItemsCategoriesMap } from 'ui/shared/search/utils';
 import { getItemCategory, searchCategories } from 'ui/shared/search/utils';
 
 import SearchBarSuggestApp from './SearchBarSuggestApp';
+import SearchBarSuggestBlockCountdown from './SearchBarSuggestBlockCountdown';
 import SearchBarSuggestItem from './SearchBarSuggestItem';
 
 interface Props {
@@ -68,7 +70,9 @@ const SearchBarSuggest = ({ query, searchTerm, onItemClick, containerId }: Props
     if (!query.data && !marketplaceApps.displayedApps) {
       return {};
     }
+
     const map: Partial<ItemsCategoriesMap> = {};
+
     query.data?.forEach(item => {
       const cat = getItemCategory(item) as ApiCategory;
       if (cat) {
@@ -79,11 +83,23 @@ const SearchBarSuggest = ({ query, searchTerm, onItemClick, containerId }: Props
         }
       }
     });
+
     if (marketplaceApps.displayedApps.length) {
       map.app = marketplaceApps.displayedApps;
     }
+
+    if (Object.keys(map).length > 0 && !map.block && regexp.BLOCK_HEIGHT.test(searchTerm)) {
+      map['block'] = [ {
+        type: 'block',
+        block_type: 'block',
+        block_number: searchTerm,
+        block_hash: '',
+        timestamp: undefined,
+      } ];
+    }
+
     return map;
-  }, [ query.data, marketplaceApps.displayedApps ]);
+  }, [ query.data, marketplaceApps.displayedApps, searchTerm ]);
 
   React.useEffect(() => {
     categoriesRefs.current = Array(Object.keys(itemsGroups).length).fill('').map((_, i) => categoriesRefs.current[i] || React.createRef());
@@ -113,6 +129,10 @@ const SearchBarSuggest = ({ query, searchTerm, onItemClick, containerId }: Props
     const resultCategories = searchCategories.filter(cat => itemsGroups[cat.id]);
 
     if (resultCategories.length === 0) {
+      if (regexp.BLOCK_HEIGHT.test(searchTerm)) {
+        return <SearchBarSuggestBlockCountdown blockHeight={ searchTerm } onClick={ onItemClick }/>;
+      }
+
       return <Text>No results found.</Text>;
     }
 
@@ -122,7 +142,11 @@ const SearchBarSuggest = ({ query, searchTerm, onItemClick, containerId }: Props
           <Box position="sticky" top="0" width="100%" background={ bgColor } py={ 5 } my={ -5 } ref={ tabsRef }>
             <Tabs variant="outline" colorScheme="gray" size="sm" index={ tabIndex }>
               <TabList columnGap={ 3 } rowGap={ 2 } flexWrap="wrap">
-                { resultCategories.map((cat, index) => <Tab key={ cat.id } onClick={ scrollToCategory(index) }>{ cat.title }</Tab>) }
+                { resultCategories.map((cat, index) => (
+                  <Tab key={ cat.id } onClick={ scrollToCategory(index) } { ...(tabIndex === index ? { 'data-selected': 'true' } : {}) }>
+                    { cat.title }
+                  </Tab>
+                )) }
               </TabList>
             </Tabs>
           </Box>

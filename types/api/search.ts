@@ -22,8 +22,23 @@ export interface SearchResultAddressOrContractOrUniversalProfile {
   name: string | null;
   address: string;
   is_smart_contract_verified: boolean;
+  certified?: true;
   url?: string; // not used by the frontend, we build the url ourselves
   ens_info?: {
+    address_hash: string;
+    expiry_date?: string;
+    name: string;
+    names_count: number;
+  };
+}
+
+export interface SearchResultDomain {
+  type: 'ens_domain';
+  name: string | null;
+  address: string;
+  is_smart_contract_verified: boolean;
+  url?: string; // not used by the frontend, we build the url ourselves
+  ens_info: {
     address_hash: string;
     expiry_date?: string;
     name: string;
@@ -68,13 +83,8 @@ export interface SearchResultUserOp {
   url?: string; // not used by the frontend, we build the url ourselves
 }
 
-export type SearchResultItem = SearchResultToken |
-SearchResultAddressOrContractOrUniversalProfile |
-SearchResultBlock |
-SearchResultTx |
-SearchResultLabel |
-SearchResultUserOp |
-SearchResultBlob;
+export type SearchResultItem = SearchResultToken | SearchResultAddressOrContractOrUniversalProfile | SearchResultBlock | SearchResultTx |
+SearchResultLabel | SearchResultUserOp | SearchResultBlob | SearchResultDomain;
 
 export interface SearchResult {
   items: Array<SearchResultItem>;

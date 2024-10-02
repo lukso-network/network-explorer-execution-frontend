@@ -5,6 +5,7 @@ import React from 'react';
 import type { TokenInfo } from 'types/api/token';
 
 import config from 'configs/app';
+import { getTokenTypeName } from 'lib/token/tokenTypes';
 import AddressAddToWallet from 'ui/shared/address/AddressAddToWallet';
 import Tag from 'ui/shared/chakra/Tag';
 import type { EntityProps as AddressEntityProps } from 'ui/shared/entities/address/AddressEntity';
@@ -45,19 +46,15 @@ const TokensTableItem = ({
   const tokenAddress: AddressEntityProps['address'] = {
     hash: address,
     name: '',
-    implementation_name: null,
     is_contract: true,
     is_verified: false,
     ens_domain_name: null,
+    implementations: null,
   };
 
   return (
     <Tr
-      sx={{
-        '&:hover [aria-label="Add token to wallet"]': {
-          opacity: 1,
-        },
-      }}
+      role="group"
     >
       <Td>
         <Flex alignItems="flex-start">
@@ -93,10 +90,11 @@ const TokensTableItem = ({
                 isLoading={ isLoading }
                 iconSize={ 5 }
                 opacity={ 0 }
+                _groupHover={{ opacity: 1 }}
               />
             </Flex>
             <Flex columnGap={ 1 }>
-              <Tag isLoading={ isLoading }>{ type }</Tag>
+              <Tag isLoading={ isLoading }>{ getTokenTypeName(type) }</Tag>
               { bridgedChainTag && <Tag isLoading={ isLoading }>{ bridgedChainTag }</Tag> }
             </Flex>
           </Flex>

@@ -1,32 +1,37 @@
-import { Flex, Skeleton, Button, Grid, GridItem, Alert, Link, chakra, Box } from '@chakra-ui/react';
+import { Flex, Skeleton, Button, Grid, GridItem, Alert, chakra, Box, useColorModeValue } from '@chakra-ui/react';
+import type { UseQueryResult } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
+import type { Channel } from 'phoenix';
 import React from 'react';
 
 import type { SocketMessage } from 'lib/socket/types';
 import type { Address as AddressInfo } from 'types/api/address';
+import type { SmartContract } from 'types/api/contract';
 
 import { route } from 'nextjs-routes';
 
 import config from 'configs/app';
-import useApiQuery, { getResourceKey } from 'lib/api/useApiQuery';
+import type { ResourceError } from 'lib/api/resources';
+import { getResourceKey } from 'lib/api/useApiQuery';
 import { CONTRACT_LICENSES } from 'lib/contracts/licenses';
 import dayjs from 'lib/date/dayjs';
-import useSocketChannel from 'lib/socket/useSocketChannel';
 import useSocketMessage from 'lib/socket/useSocketMessage';
-import * as stubs from 'stubs/contract';
+import ContractCertifiedLabel from 'ui/shared/ContractCertifiedLabel';
 import DataFetchAlert from 'ui/shared/DataFetchAlert';
 import AddressEntity from 'ui/shared/entities/address/AddressEntity';
-import LinkExternal from 'ui/shared/LinkExternal';
-import LinkInternal from 'ui/shared/LinkInternal';
+import Hint from 'ui/shared/Hint';
+import LinkExternal from 'ui/shared/links/LinkExternal';
+import LinkInternal from 'ui/shared/links/LinkInternal';
 import RawDataSnippet from 'ui/shared/RawDataSnippet';
 
+import ContractCodeProxyPattern from './ContractCodeProxyPattern';
 import ContractSecurityAudits from './ContractSecurityAudits';
 import ContractSourceCode from './ContractSourceCode';
 
 type Props = {
   addressHash?: string;
-  // prop for pw tests only
-  noSocket?: boolean;
+  contractQuery: UseQueryResult<SmartContract, ResourceError<unknown>>;
+  channel: Channel | undefined;
 }
 
 type InfoItemProps = {
@@ -34,30 +39,37 @@ type InfoItemProps = {
   content: string | React.ReactNode;
   className?: string;
   isLoading: boolean;
+  hint?: string;
 }
 
-const InfoItem = chakra(({ label, content, className, isLoading }: InfoItemProps) => (
+const InfoItem = chakra(({ label, content, hint, className, isLoading }: InfoItemProps) => (
   <GridItem display="flex" columnGap={ 6 } wordBreak="break-all" className={ className } alignItems="baseline">
-    <Skeleton isLoaded={ !isLoading } w="170px" flexShrink={ 0 } fontWeight={ 500 }>{ label }</Skeleton>
+    <Skeleton isLoaded={ !isLoading } w="170px" flexShrink={ 0 } fontWeight={ 500 }>
+      <Flex alignItems="center">
+        { label }
+        { hint && (
+          <Hint
+            label={ hint }
+            ml={ 2 }
+            color={ useColorModeValue('gray.600', 'gray.400') }
+            tooltipProps={{ placement: 'bottom' }}
+          />
+        ) }
+      </Flex>
+    </Skeleton>
     <Skeleton isLoaded={ !isLoading }>{ content }</Skeleton>
   </GridItem>
 ));
 
-const ContractCode = ({ addressHash, noSocket }: Props) => {
-  const [ isQueryEnabled, setIsQueryEnabled ] = React.useState(false);
+const rollupFeature = config.features.rollup;
+
+const ContractCode = ({ addressHash, contractQuery, channel }: Props) => {
   const [ isChangedBytecodeSocket, setIsChangedBytecodeSocket ] = React.useState<boolean>();
 
   const queryClient = useQueryClient();
   const addressInfo = queryClient.getQueryData<AddressInfo>(getResourceKey('address', { pathParams: { hash: addressHash } }));
 
-  const { data, isPlaceholderData, isError } = useApiQuery('contract', {
-    pathParams: { hash: addressHash },
-    queryOptions: {
-      enabled: Boolean(addressHash) && (noSocket || isQueryEnabled),
-      refetchOnMount: false,
-      placeholderData: addressInfo?.is_verified ? stubs.CONTRACT_CODE_VERIFIED : stubs.CONTRACT_CODE_UNVERIFIED,
-    },
-  });
+  const { data, isPlaceholderData, isError } = contractQuery;
 
   const handleChangedBytecodeMessage: SocketMessage.AddressChangedBytecode['handler'] = React.useCallback(() => {
     setIsChangedBytecodeSocket(true);
@@ -72,14 +84,6 @@ const ContractCode = ({ addressHash, noSocket }: Props) => {
     });
   }, [ addressHash, queryClient ]);
 
-  const enableQuery = React.useCallback(() => setIsQueryEnabled(true), []);
-
-  const channel = useSocketChannel({
-    topic: `addresses:${ addressHash?.toLowerCase() }`,
-    isDisabled: !addressHash,
-    onJoin: enableQuery,
-    onSocketError: enableQuery,
-  });
   useSocketMessage({
     channel,
     event: 'changed_bytecode',
@@ -195,9 +199,24 @@ const ContractCode = ({ addressHash, noSocket }: Props) => {
     return null;
   })();
 
+  const contractNameWithCertifiedIcon = data?.is_verified ? (
+    <Flex alignItems="center">
+      { data.name }
+      { data.certified && <ContractCertifiedLabel iconSize={ 5 } boxSize={ 5 } ml={ 2 }/> }
+    </Flex>
+  ) : null;
+
   return (
     <>
       <Flex flexDir="column" rowGap={ 2 } mb={ 6 } _empty={{ display: 'none' }}>
+        { data?.is_blueprint && (
+          <Box>
+            <span>This is an </span>
+            <LinkExternal href="https://eips.ethereum.org/EIPS/eip-5202">
+              ERC-5202 Blueprint contract
+            </LinkExternal>
+          </Box>
+        ) }
         { data?.is_verified && (
           <Skeleton isLoaded={ !isPlaceholderData }>
             <Alert status="success" flexWrap="wrap" rowGap={ 3 } columnGap={ 5 }>
@@ -212,11 +231,11 @@ const ContractCode = ({ addressHash, noSocket }: Props) => {
             Warning! Contract bytecode has been changed and does not match the verified one. Therefore, interaction with this smart contract may be risky.
           </Alert>
         ) }
-        { !data?.is_verified && data?.verified_twin_address_hash && !data?.minimal_proxy_address_hash && (
+        { !data?.is_verified && data?.verified_twin_address_hash && (!data?.proxy_type || data.proxy_type === 'unknown') && (
           <Alert status="warning" whiteSpace="pre-wrap" flexWrap="wrap">
             <span>Contract is not verified. However, we found a verified contract with the same bytecode in Blockscout DB </span>
             <AddressEntity
-              address={{ hash: data.verified_twin_address_hash, is_contract: true, implementation_name: null }}
+              address={{ hash: data.verified_twin_address_hash, is_contract: true }}
               truncation="constant"
               fontSize="sm"
               fontWeight="500"
@@ -228,33 +247,31 @@ const ContractCode = ({ addressHash, noSocket }: Props) => {
             <span> page</span>
           </Alert>
         ) }
-        { data?.minimal_proxy_address_hash && (
-          <Alert status="warning" flexWrap="wrap" whiteSpace="pre-wrap">
-            <span>Minimal Proxy Contract for </span>
-            <AddressEntity
-              address={{ hash: data.minimal_proxy_address_hash, is_contract: true, implementation_name: null }}
-              truncation="constant"
-              fontSize="sm"
-              fontWeight="500"
-              noCopy
-            />
-            <span>. </span>
-            <Box>
-              <Link href="https://eips.ethereum.org/EIPS/eip-1167">EIP-1167</Link>
-              <span> - minimal bytecode implementation that delegates all calls to a known address</span>
-            </Box>
-          </Alert>
-        ) }
+        { data?.proxy_type && <ContractCodeProxyPattern type={ data.proxy_type }/> }
       </Flex>
       { data?.is_verified && (
         <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} rowGap={ 4 } columnGap={ 6 } mb={ 8 }>
-          { data.name && <InfoItem label="Contract name" content={ data.name } isLoading={ isPlaceholderData }/> }
+          { data.name && <InfoItem label="Contract name" content={ contractNameWithCertifiedIcon } isLoading={ isPlaceholderData }/> }
           { data.compiler_version && <InfoItem label="Compiler version" content={ data.compiler_version } isLoading={ isPlaceholderData }/> }
+          { data.zk_compiler_version && <InfoItem label="ZK compiler version" content={ data.zk_compiler_version } isLoading={ isPlaceholderData }/> }
           { data.evm_version && <InfoItem label="EVM version" content={ data.evm_version } textTransform="capitalize" isLoading={ isPlaceholderData }/> }
-          { licenseLink && <InfoItem label="License" content={ licenseLink } isLoading={ isPlaceholderData }/> }
+          { licenseLink && (
+            <InfoItem
+              label="License"
+              content={ licenseLink }
+              hint="License type is entered manually during verification. The initial source code may contain a different license type than the one displayed."
+              isLoading={ isPlaceholderData }
+            />
+          ) }
           { typeof data.optimization_enabled === 'boolean' &&
             <InfoItem label="Optimization enabled" content={ data.optimization_enabled ? 'true' : 'false' } isLoading={ isPlaceholderData }/> }
-          { data.optimization_runs && <InfoItem label="Optimization runs" content={ String(data.optimization_runs) } isLoading={ isPlaceholderData }/> }
+          { data.optimization_runs !== null && (
+            <InfoItem
+              label={ rollupFeature.isEnabled && rollupFeature.type === 'zkSync' ? 'Optimization mode' : 'Optimization runs' }
+              content={ String(data.optimization_runs) }
+              isLoading={ isPlaceholderData }
+            />
+          ) }
           { data.verified_at &&
             <InfoItem label="Verified at" content={ dayjs(data.verified_at).format('llll') } wordBreak="break-word" isLoading={ isPlaceholderData }/> }
           { data.file_path && <InfoItem label="Contract file path" content={ data.file_path } wordBreak="break-word" isLoading={ isPlaceholderData }/> }
@@ -276,10 +293,10 @@ const ContractCode = ({ addressHash, noSocket }: Props) => {
             isLoading={ isPlaceholderData }
           />
         ) }
-        { data?.source_code && (
+        { data?.source_code && addressHash && (
           <ContractSourceCode
             address={ addressHash }
-            implementationAddress={ addressInfo?.implementation_address ?? undefined }
+            implementations={ addressInfo?.implementations || undefined }
           />
         ) }
         { data?.compiler_settings ? (

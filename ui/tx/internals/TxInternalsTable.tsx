@@ -37,14 +37,14 @@ const TxInternalsTable = ({ data, sort, onSortToggle, top, isLoading }: Props) =
             <Th width="16%" isNumeric>
               <Link display="flex" alignItems="center" justifyContent="flex-end" onClick={ onSortToggle('gas-limit') } columnGap={ 1 }>
                 { sort?.includes('gas-limit') && <IconSvg name="arrows/east" boxSize={ 4 } transform={ sortIconTransform }/> }
-                Gas limit
+                Gas limit { currencyUnits.ether }
               </Link>
             </Th>
           </Tr>
         </Thead>
         <Tbody>
           { data.map((item, index) => (
-            <TxInternalsTableItem key={ item.transaction_hash + (isLoading ? index : '') } { ...item } isLoading={ isLoading }/>
+            <TxInternalsTableItem key={ item.index.toString() + (isLoading ? index : '') } { ...item } isLoading={ isLoading }/>
           )) }
         </Tbody>
       </Table>

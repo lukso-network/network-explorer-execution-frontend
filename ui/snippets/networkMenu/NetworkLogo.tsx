@@ -1,5 +1,4 @@
-import type { StyleProps } from '@chakra-ui/react';
-import { Box, Image, useColorModeValue, Skeleton } from '@chakra-ui/react';
+import { Box, Image, useColorModeValue, Skeleton, chakra } from '@chakra-ui/react';
 import React from 'react';
 
 import { route } from 'nextjs-routes';
@@ -10,7 +9,7 @@ import IconSvg from 'ui/shared/IconSvg';
 interface Props {
   isCollapsed?: boolean;
   onClick?: (event: React.SyntheticEvent) => void;
-  imageProps?: StyleProps;
+  className?: string;
 }
 
 const LogoFallback = ({ isCollapsed, isSmall, imageProps }: { isCollapsed?: boolean; isSmall?: boolean; imageProps?: StyleProps }) => {
@@ -27,7 +26,7 @@ const LogoFallback = ({ isCollapsed, isSmall, imageProps }: { isCollapsed?: bool
     xl: isCollapsed ? 'none' : 'block',
   };
 
-  if (config.UI.sidebar[field].default) {
+  if (config.UI.navigation[field].default) {
     return <Skeleton w="100%" borderRadius="sm" display={ display }/>;
   }
 
@@ -43,16 +42,17 @@ const LogoFallback = ({ isCollapsed, isSmall, imageProps }: { isCollapsed?: bool
   );
 };
 
-const NetworkLogo = ({ isCollapsed, onClick, imageProps }: Props) => {
+const NetworkLogo = ({ isCollapsed, onClick, className }: Props) => {
 
-  const logoSrc = useColorModeValue(config.UI.sidebar.logo.default, config.UI.sidebar.logo.dark || config.UI.sidebar.logo.default);
-  const iconSrc = useColorModeValue(config.UI.sidebar.icon.default, config.UI.sidebar.icon.dark || config.UI.sidebar.icon.default);
+  const logoSrc = useColorModeValue(config.UI.navigation.logo.default, config.UI.navigation.logo.dark || config.UI.navigation.logo.default);
+  const iconSrc = useColorModeValue(config.UI.navigation.icon.default, config.UI.navigation.icon.dark || config.UI.navigation.icon.default);
   const darkModeFilter = { filter: 'brightness(0) invert(1)' };
-  const logoStyle = useColorModeValue({}, !config.UI.sidebar.logo.dark ? darkModeFilter : {});
-  const iconStyle = useColorModeValue({}, !config.UI.sidebar.icon.dark ? darkModeFilter : {});
+  const logoStyle = useColorModeValue({}, !config.UI.navigation.logo.dark ? darkModeFilter : {});
+  const iconStyle = useColorModeValue({}, !config.UI.navigation.icon.dark ? darkModeFilter : {});
 
   return (
     <Box
+      className={ className }
       as="a"
       href={ route({ pathname: '/' }) }
       width={{ base: '120px', lg: isCollapsed === false ? '120px' : '30px', xl: isCollapsed ? '30px' : '120px' }}
@@ -89,4 +89,4 @@ const NetworkLogo = ({ isCollapsed, onClick, imageProps }: Props) => {
   );
 };
 
-export default React.memo(NetworkLogo);
+export default React.memo(chakra(NetworkLogo));

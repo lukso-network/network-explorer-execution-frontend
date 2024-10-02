@@ -1,14 +1,15 @@
-import { Box, chakra, Flex, Text } from '@chakra-ui/react';
+import { chakra, Box, Text, Flex } from '@chakra-ui/react';
 import React from 'react';
 
 import type { SearchResultAddressOrContractOrUniversalProfile } from 'types/api/search';
 
-import dayjs from '../../../../lib/date/dayjs';
-import highlightText from '../../../../lib/highlightText';
-import { ADDRESS_REGEXP } from '../../../../lib/validations/address';
-import * as AddressEntity from '../../../shared/entities/address/AddressEntity';
-import { formattedLuksoName } from '../../../shared/entities/address/IdenticonUniversalProfileQuery';
-import HashStringShortenDynamic from '../../../shared/HashStringShortenDynamic';
+import dayjs from 'lib/date/dayjs';
+import highlightText from 'lib/highlightText';
+import { ADDRESS_REGEXP } from 'lib/validations/address';
+import ContractCertifiedLabel from 'ui/shared/ContractCertifiedLabel';
+import * as AddressEntity from 'ui/shared/entities/address/AddressEntity';
+import { formattedLuksoName } from 'ui/shared/entities/address/IdenticonUniversalProfileQuery';
+import HashStringShortenDynamic from 'ui/shared/HashStringShortenDynamic';
 
 interface Props {
   data: SearchResultAddressOrContractOrUniversalProfile;
@@ -18,6 +19,7 @@ interface Props {
 
 const SearchBarSuggestAddress = ({ data, isMobile, searchTerm }: Props) => {
   const shouldHighlightHash = ADDRESS_REGEXP.test(searchTerm);
+
   const icon = (
     <AddressEntity.Icon
       address={{
@@ -25,8 +27,8 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm }: Props) => {
         is_contract: data.type === 'contract' || data.type === 'universal_profile',
         name: '',
         is_verified: data.is_smart_contract_verified,
-        implementation_name: null,
         ens_domain_name: null,
+        implementations: null,
       }}
     />
   );
@@ -37,24 +39,23 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm }: Props) => {
     data.name = '';
   }
 
-  const highlightedText = data.type === 'universal_profile' ? data.address : data.name;
-
   const nameEl = addressName && (
-    <Text
-      variant="secondary"
-      overflow="hidden"
-      whiteSpace="nowrap"
-      textOverflow="ellipsis"
-    >
-      <chakra.span fontWeight={ 500 } dangerouslySetInnerHTML={{ __html: highlightText(highlightedText, searchTerm) }}/>
-      { data.ens_info &&
-                (
-                  data.ens_info.names_count > 1 ?
-                    <span> ({ data.ens_info.names_count > 39 ? '40+' : `+${ data.ens_info.names_count - 1 }` })</span> :
-                    <span>{ expiresText }</span>
-                )
-      }
-    </Text>
+    <Flex alignItems="center">
+      <Text
+        variant="secondary"
+        overflow="hidden"
+        whiteSpace="nowrap"
+        textOverflow="ellipsis"
+      >
+        <chakra.span fontWeight={ 500 } dangerouslySetInnerHTML={{ __html: highlightText(addressName, searchTerm) }}/>
+        { data.ens_info && (
+          data.ens_info.names_count > 1 ?
+            <span> ({ data.ens_info.names_count > 39 ? '40+' : `+${ data.ens_info.names_count - 1 }` })</span> :
+            <span>{ expiresText }</span>
+        ) }
+      </Text>
+      { data.certified && <ContractCertifiedLabel boxSize={ 5 } iconSize={ 5 } ml={ 1 }/> }
+    </Flex>
   );
 
   const dynamicTitle = data.type === 'universal_profile' ? formattedLuksoName(data.address, data.name) : data.address;
