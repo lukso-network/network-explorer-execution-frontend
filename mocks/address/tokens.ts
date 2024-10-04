@@ -154,13 +154,6 @@ export const erc404List: AddressTokensResponse = {
   next_page_params: null,
 };
 
-export const erc404List = {
-  items: [
-    erc404a,
-    erc404b,
-  ],
-};
-
 export const nfts: AddressNFTsResponse = {
   items: [
     {

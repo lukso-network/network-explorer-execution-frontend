@@ -96,7 +96,7 @@ export const contract1: SearchResultAddressOrContractOrUniversalProfile = {
   url: '/address/0xb64a30399f7F6b0C154c2E7Af0a3ec7B0A5b131a',
 };
 
-export const contract2: SearchResultAddressOrContract = {
+export const contract2: SearchResultAddressOrContractOrUniversalProfile = {
   address: '0xb64a30399f7F6b0C154c2E7Af0a3ec7B0A5b131a',
   name: 'Super utko',
   type: 'contract' as const,
