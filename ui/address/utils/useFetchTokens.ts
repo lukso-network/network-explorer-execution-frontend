@@ -42,11 +42,6 @@ export default function useFetchTokens({ hash, enabled }: Props) {
     queryParams: { type: 'ERC-404' },
     queryOptions: { enabled: Boolean(hash) && enabled, refetchOnMount: false },
   });
-  const erc404query = useApiQuery('address_tokens', {
-    pathParams: { hash },
-    queryParams: { type: 'ERC-404' },
-    queryOptions: { enabled: Boolean(hash), refetchOnMount: false },
-  });
 
   const queryClient = useQueryClient();
 

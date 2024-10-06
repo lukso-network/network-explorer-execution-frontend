@@ -22,7 +22,7 @@ const Validators = dynamic(() => {
 
 const Page: NextPage = () => {
   return (
-    <PageNextJs pathname="/gas-tracker">
+    <PageNextJs pathname="/validators">
       <Validators/>
     </PageNextJs>
   );

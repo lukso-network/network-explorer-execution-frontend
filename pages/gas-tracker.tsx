@@ -4,16 +4,16 @@ import React from 'react';
 
 import PageNextJs from 'nextjs/PageNextJs';
 
-const MudWorlds = dynamic(() => import('ui/pages/MudWorlds'), { ssr: false });
+const GasTracker = dynamic(() => import('ui/pages/GasTracker'), { ssr: false });
 
 const Page: NextPage = () => {
   return (
-    <PageNextJs pathname="/mud-worlds">
-      <MudWorlds/>
+    <PageNextJs pathname="/gas-tracker">
+      <GasTracker/>
     </PageNextJs>
   );
 };
 
 export default Page;
 
-export { mud as getServerSideProps } from 'nextjs/getServerSideProps';
+export { gasTracker as getServerSideProps } from 'nextjs/getServerSideProps';

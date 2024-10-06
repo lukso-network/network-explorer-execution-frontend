@@ -42,12 +42,6 @@ const ChartsWidgetsList = ({ filterQuery, isError, isPlaceholderData, charts, in
     },
   });
 
-  const homeStatsQuery = useApiQuery('stats', {
-    queryOptions: {
-      refetchOnMount: false,
-    },
-  });
-
   const handleChartLoadingError = useCallback(
     () => setIsSomeChartLoadingError(true),
     [ setIsSomeChartLoadingError ]);
