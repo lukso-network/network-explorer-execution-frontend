@@ -12,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-const LogoFallback = ({ isCollapsed, isSmall, imageProps }: { isCollapsed?: boolean; isSmall?: boolean; imageProps?: StyleProps }) => {
+const LogoFallback = ({ isCollapsed, isSmall }: { isCollapsed?: boolean; isSmall?: boolean }) => {
   const field = isSmall ? 'icon' : 'logo';
   const logoColor = useColorModeValue('blue.600', 'white');
 
@@ -37,7 +37,6 @@ const LogoFallback = ({ isCollapsed, isSmall, imageProps }: { isCollapsed?: bool
       height="100%"
       color={ logoColor }
       display={ display }
-      { ...imageProps }
     />
   );
 };
@@ -69,10 +68,9 @@ const NetworkLogo = ({ isCollapsed, onClick, className }: Props) => {
         h="100%"
         src={ logoSrc }
         alt={ `${ config.chain.name } network logo` }
-        fallback={ <LogoFallback isCollapsed={ isCollapsed } imageProps={ imageProps }/> }
+        fallback={ <LogoFallback isCollapsed={ isCollapsed }/> }
         display={{ base: 'block', lg: isCollapsed === false ? 'block' : 'none', xl: isCollapsed ? 'none' : 'block' }}
         style={ logoStyle }
-        { ...imageProps }
       />
       { /* small logo */ }
       <Image
@@ -80,10 +78,9 @@ const NetworkLogo = ({ isCollapsed, onClick, className }: Props) => {
         h="100%"
         src={ iconSrc }
         alt={ `${ config.chain.name } network logo` }
-        fallback={ <LogoFallback isCollapsed={ isCollapsed } imageProps={ imageProps } isSmall/> }
+        fallback={ <LogoFallback isCollapsed={ isCollapsed } isSmall/> }
         display={{ base: 'none', lg: isCollapsed === false ? 'none' : 'block', xl: isCollapsed ? 'block' : 'none' }}
         style={ iconStyle }
-        { ...imageProps }
       />
     </Box>
   );
