@@ -25,3 +25,10 @@ export type UniversalProfileAlgoliaResponse = {
     };
   };
 }
+
+export type UniversalProfileGraphResponse = {
+  result: string;
+  id: string;
+  name: string;
+  fullName: string
+}
