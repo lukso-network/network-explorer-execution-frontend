@@ -6,6 +6,7 @@
 	| "API"
 	| "apps_list"
 	| "apps_slim"
+	| "apps_xs"
 	| "apps"
 	| "arrows/down-right"
 	| "arrows/east-mini"
@@ -35,6 +36,8 @@
 	| "clock"
 	| "coins/bitcoin"
 	| "collection"
+	| "contracts_verified"
+	| "contracts"
 	| "contracts/proxy"
 	| "contracts/regular_many"
 	| "contracts/regular"
@@ -160,6 +163,7 @@
 	| "txn_batches_slim"
 	| "txn_batches"
 	| "uniswap"
+	| "up"
 	| "user_op_slim"
 	| "user_op"
 	| "validator"
@@ -171,4 +175,4 @@
 	| "wallets/metamask"
 	| "wallets/token-pocket"
 	| "watchlist";
-
+  
