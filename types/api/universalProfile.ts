@@ -1,3 +1,5 @@
+import { Query, queryResponse } from "lib/api/graphTypes";
+
 export type UniversalProfileProxyResponse = {
   type: string;
   hasProfileName: boolean;
@@ -26,9 +28,9 @@ export type UniversalProfileAlgoliaResponse = {
   };
 }
 
-export type UniversalProfileGraphResponse = {
-  result: string;
-  id: string;
-  name: string;
-  fullName: string
+export type UniversalProfileGraphResponse<T> = {
+  data: {
+    [key in Query]: T;
+  };
 }
+
