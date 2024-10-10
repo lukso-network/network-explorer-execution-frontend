@@ -15,6 +15,4 @@ export type GraphQuery = {
   query: string;
 };
 
-export enum Query {
-  search_profile,
-}
+export type QueryOperation = 'search_profiles';

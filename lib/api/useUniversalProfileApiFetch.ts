@@ -1,11 +1,11 @@
 import React from 'react';
 
 import type { SearchResultAddressOrContractOrUniversalProfile } from '../../types/api/search';
-import type { UniversalProfileGraphResponse, UniversalProfileProxyResponse } from '../../types/api/universalProfile';
 
 import type { Params as FetchParams } from 'lib/hooks/useFetch';
 
-import { graphClient } from './graphClient'
+import { graphClient } from './graphClient';
+import type { SearchProfileQueryResponse } from './graphTypes';
 import { isUniversalProfileEnabled } from './isUniversalProfileEnabled';
 import type { ResourceName, ResourcePathParams } from './resources';
 
@@ -22,17 +22,18 @@ export default function useUniversalProfileApiFetch() {
       return [] as Array<SearchResultAddressOrContractOrUniversalProfile>;
     }
     try {
-      const result: UniversalProfileGraphResponse | null = await graphClient.getProfile(queryParams)
+      const result = await graphClient.getProfiles(queryParams);
       if (result == null) {
         return [] as Array<SearchResultAddressOrContractOrUniversalProfile>;
       }
 
-      //const { hits } = await algoliaIndex.search(queryParams);
-      return result.map<SearchResultAddressOrContractOrUniversalProfile>((hit: UniversalProfileGraphResponse) => {
-        const hitAsUp = hit as unknown as UniversalProfileGraphResponse;
+      const hits = result.data.search_profiles as Array<SearchProfileQueryResponse>;
+
+      return hits.map<SearchResultAddressOrContractOrUniversalProfile>((hit: SearchProfileQueryResponse) => {
+        const hitAsUp = hit as unknown as SearchProfileQueryResponse;
         return {
           type: 'universal_profile',
-          name: hitAsUp.name != '' ? hitAsUp.name : null,
+          name: hitAsUp.name !== '' ? hitAsUp.name : null,
           address: hit.id,
           is_smart_contract_verified: false,
         };

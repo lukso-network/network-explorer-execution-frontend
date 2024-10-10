@@ -1,4 +1,4 @@
-import { Query, queryResponse } from "lib/api/graphTypes";
+import type { QueryOperation } from 'lib/api/graphTypes';
 
 export type UniversalProfileProxyResponse = {
   type: string;
@@ -28,9 +28,8 @@ export type UniversalProfileAlgoliaResponse = {
   };
 }
 
-export type UniversalProfileGraphResponse<T> = {
+export type GraphResponse<T> = {
   data: {
-    [key in Query]: T;
+    [key in QueryOperation]: Array<T>;
   };
 }
-

@@ -6,6 +6,7 @@ export function universalProfile(): CspDev.DirectiveDescriptor {
       'api.universalprofile.cloud',
       '*.algolianet.com',
       '*.algolia.net',
+      'envio.mainnet.lukso.dev',
     ],
   };
 }

@@ -1,25 +1,29 @@
-import { getEnvValue } from "configs/app/utils";
-import { UniversalProfileGraphResponse } from "types/api/universalProfile";
-import { SearchProfileQueryResponse } from "./graphTypes";
-import { universalProfile } from "nextjs/csp/policies";
+import type { GraphResponse } from 'types/api/universalProfile';
+
+import { getEnvValue } from 'configs/app/utils';
+
+import { constructQuery } from './graphQueries';
+import type { QueryOperation, SearchProfileQueryResponse } from './graphTypes';
 
 const graphUrl = getEnvValue('NEXT_PUBLIC_GRAPH_URL') || '';
 
+type FetchFunc<T> = (queryParams?: string) => Promise<GraphResponse<T> | null>
+
 type GraphClient = {
-  getProfiles: (queryParams: string) => Promise<UniversalProfileGraphResponse<SearchProfileQueryResponse> | null>; 
+  getProfiles: FetchFunc<SearchProfileQueryResponse>;
 };
 
-type fetchFunc<T> = (queryParams: string) => Promise<UniversalProfileGraphResponse<T> | null>
+const queryParamsToGraphQuery = (operationName: QueryOperation, queryParams?: string): string => {
+  const query = constructQuery(operationName, queryParams);
 
-const queryParamsToGraphQuery = (operationName: string, query: string): string => {
   return JSON.stringify({
     operationName: operationName,
     query: query,
-  }); 
-}
+  });
+};
 
-const fetchQuery = <T>(operationName: string): fetchFunc<T> => {
-  return async (queryParams: string): Promise<UniversalProfileGraphResponse<T> | null> => {
+const fetchQuery = <T>(operationName: QueryOperation): FetchFunc<T> => {
+  return async(queryParams?: string): Promise<GraphResponse<T> | null> => {
     const query = queryParamsToGraphQuery(operationName, queryParams);
 
     try {
@@ -29,16 +33,15 @@ const fetchQuery = <T>(operationName: string): fetchFunc<T> => {
         body: query,
       });
       const json = await resp.json();
-      return json as UniversalProfileGraphResponse<T>;
+      return json as GraphResponse<T>;
     } catch (err) {
       return null;
-    };
-  }
-}
+    }
+  };
+};
 
 const createGraphClient = (): GraphClient => ({
-  getProfiles: fetchQuery<SearchProfileQueryResponse>('search_profiles'), 
+  getProfiles: fetchQuery<SearchProfileQueryResponse>('search_profiles'),
 });
 
 export const graphClient: GraphClient = createGraphClient();
-
