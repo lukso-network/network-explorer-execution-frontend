@@ -33,7 +33,7 @@ export default function useUniversalProfileApiFetch() {
         const hitAsUp = hit as unknown as SearchProfileQueryResponse;
         return {
           type: 'universal_profile',
-          name: hitAsUp.name !== '' ? hitAsUp.name : null,
+          name: hitAsUp.name !== '' ? hitAsUp.name.trim() : null,
           address: hit.id,
           is_smart_contract_verified: false,
         };
