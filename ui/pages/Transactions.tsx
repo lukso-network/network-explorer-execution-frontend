@@ -1,3 +1,4 @@
+import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import React from 'react';
 
@@ -7,6 +8,7 @@ import config from 'configs/app';
 import useHasAccount from 'lib/hooks/useHasAccount';
 import useIsMobile from 'lib/hooks/useIsMobile';
 import useNewTxsSocket from 'lib/hooks/useNewTxsSocket';
+import getNetworkValidationActionText from 'lib/networks/getNetworkValidationActionText';
 import getQueryParamString from 'lib/router/getQueryParamString';
 import { TX } from 'stubs/tx';
 import { generateListStub } from 'stubs/utils';
@@ -14,26 +16,23 @@ import PageTitle from 'ui/shared/Page/PageTitle';
 import Pagination from 'ui/shared/pagination/Pagination';
 import useQueryWithPages from 'ui/shared/pagination/useQueryWithPages';
 import RoutedTabs from 'ui/shared/Tabs/RoutedTabs';
+import TxsStats from 'ui/txs/TxsStats';
 import TxsWatchlist from 'ui/txs/TxsWatchlist';
 import TxsWithFrontendSorting from 'ui/txs/TxsWithFrontendSorting';
 
 const TAB_LIST_PROPS = {
   marginBottom: 0,
-  py: 5,
+  pt: 6,
+  pb: 6,
   marginTop: -5,
 };
+const TABS_HEIGHT = 88;
 
 const Transactions = () => {
-  const verifiedTitle = config.chain.verificationType === 'validation' ? 'Validated' : 'Mined';
+  const verifiedTitle = capitalize(getNetworkValidationActionText());
   const router = useRouter();
   const isMobile = useIsMobile();
   const tab = getQueryParamString(router.query.tab);
-
-  React.useEffect(() => {
-    if (tab === 'blob_txs' && !config.features.dataAvailability.isEnabled) {
-      router.replace({ pathname: '/txs' }, undefined, { shallow: true });
-    }
-  }, [ router, tab ]);
 
   const txsValidatedQuery = useQueryWithPages({
     resourceName: 'txs_validated',
@@ -101,6 +100,7 @@ const Transactions = () => {
           showSocketInfo={ txsValidatedQuery.pagination.page === 1 }
           socketInfoNum={ num }
           socketInfoAlert={ socketAlert }
+          top={ TABS_HEIGHT }
         /> },
     {
       id: 'pending',
@@ -112,6 +112,7 @@ const Transactions = () => {
           showSocketInfo={ txsPendingQuery.pagination.page === 1 }
           socketInfoNum={ num }
           socketInfoAlert={ socketAlert }
+          top={ TABS_HEIGHT }
         />
       ),
     },
@@ -124,6 +125,7 @@ const Transactions = () => {
           showSocketInfo={ txsWithBlobsQuery.pagination.page === 1 }
           socketInfoNum={ num }
           socketInfoAlert={ socketAlert }
+          top={ TABS_HEIGHT }
         />
       ),
     },
@@ -145,7 +147,11 @@ const Transactions = () => {
 
   return (
     <>
-      <PageTitle title="Transactions" withTextAd/>
+      <PageTitle
+        title={ config.meta.seo.enhancedDataEnabled ? `${ config.chain.name } transactions` : 'Transactions' }
+        withTextAd
+      />
+      <TxsStats/>
       <RoutedTabs
         tabs={ tabs }
         tabListProps={ isMobile ? undefined : TAB_LIST_PROPS }

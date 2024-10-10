@@ -1,4 +1,5 @@
-import type { Counter, HomeStats, StatsChartsSection } from 'types/api/stats';
+import type * as stats from '@blockscout/stats-types';
+import type { HomeStats } from 'types/api/stats';
 
 import { currencyUnits } from '../lib/units';
 
@@ -43,7 +44,7 @@ export const HOMEPAGE_STATS: HomeStats = {
   tvl: '1767425.102766552',
 };
 
-export const STATS_CHARTS_SECTION: StatsChartsSection = {
+export const STATS_CHARTS_SECTION: stats.LineChartSection = {
   id: 'placeholder',
   title: 'Placeholder',
   charts: [
@@ -63,13 +64,13 @@ export const STATS_CHARTS_SECTION: StatsChartsSection = {
       id: 'chart_2',
       title: 'New transactions',
       description: 'New transactions number',
-      units: null,
+      units: undefined,
     },
     {
       id: 'chart_3',
       title: 'Transactions growth',
       description: 'Cumulative transactions number',
-      units: null,
+      units: undefined,
     },
   ],
 };
@@ -78,7 +79,7 @@ export const STATS_CHARTS = {
   sections: [ STATS_CHARTS_SECTION ],
 };
 
-export const STATS_COUNTER: Counter = {
+export const STATS_COUNTER: stats.Counter = {
   id: 'stub',
   value: '9074405',
   title: 'Placeholder Counter',

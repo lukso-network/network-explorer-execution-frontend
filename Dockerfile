@@ -3,7 +3,8 @@
 # *****************************
 FROM node:20.11.0-alpine AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat python3 make g++
+RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 ### APP
 # Install dependencies
@@ -33,11 +34,13 @@ RUN yarn --frozen-lockfile
 FROM node:20.11.0-alpine AS builder
 RUN apk add --no-cache --upgrade libc6-compat bash
 
-# pass commit sha and git tag to the app image
+# pass build args to env variables
 ARG GIT_COMMIT_SHA
 ENV NEXT_PUBLIC_GIT_COMMIT_SHA=$GIT_COMMIT_SHA
 ARG GIT_TAG
 ENV NEXT_PUBLIC_GIT_TAG=$GIT_TAG
+ARG NEXT_OPEN_TELEMETRY_ENABLED
+ENV NEXT_OPEN_TELEMETRY_ENABLED=$NEXT_OPEN_TELEMETRY_ENABLED
 
 ENV NODE_ENV production
 
@@ -48,7 +51,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate .env.registry with ENVs list and save build args into .env file
-COPY --chmod=+x ./deploy/scripts/collect_envs.sh ./
+COPY --chmod=755 ./deploy/scripts/collect_envs.sh ./
 RUN ./collect_envs.sh ./docs/ENVS.md
 
 # Next.js collects completely anonymous telemetry data about general usage.
@@ -57,8 +60,8 @@ RUN ./collect_envs.sh ./docs/ENVS.md
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 # Build app for production
-RUN yarn build
 RUN yarn svg:build-sprite
+RUN yarn build
 
 
 ### FEATURE REPORTER
@@ -102,14 +105,14 @@ COPY --from=builder /app/deploy/tools/feature-reporter/index.js ./feature-report
 
 # Copy scripts
 ## Entripoint
-COPY --chmod=+x ./deploy/scripts/entrypoint.sh .
+COPY --chmod=755 ./deploy/scripts/entrypoint.sh .
 ## ENV validator and client script maker
-COPY --chmod=+x ./deploy/scripts/validate_envs.sh .
-COPY --chmod=+x ./deploy/scripts/make_envs_script.sh .
+COPY --chmod=755 ./deploy/scripts/validate_envs.sh .
+COPY --chmod=755 ./deploy/scripts/make_envs_script.sh .
 ## Assets downloader
-COPY --chmod=+x ./deploy/scripts/download_assets.sh .
+COPY --chmod=755 ./deploy/scripts/download_assets.sh .
 ## Favicon generator
-COPY --chmod=+x ./deploy/scripts/favicon_generator.sh .
+COPY --chmod=755 ./deploy/scripts/favicon_generator.sh .
 COPY ./deploy/tools/favicon-generator ./deploy/tools/favicon-generator
 RUN ["chmod", "-R", "777", "./deploy/tools/favicon-generator"]
 RUN ["chmod", "-R", "777", "./public"]
@@ -117,6 +120,11 @@ RUN ["chmod", "-R", "777", "./public"]
 # Copy ENVs files
 COPY --from=builder /app/.env.registry .
 COPY --from=builder /app/.env .
+
+# Copy ENVs presets
+ARG ENVS_PRESET
+ENV ENVS_PRESET=$ENVS_PRESET
+COPY ./configs/envs ./configs/envs
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

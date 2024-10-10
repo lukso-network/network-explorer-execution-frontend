@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
 import React from 'react';
 
 import type { SearchResultItem } from '../../../types/api/search';
@@ -10,12 +9,9 @@ import useDebounce from 'lib/hooks/useDebounce';
 import useUniversalProfileQuery from '../../../lib/api/useUniversalProfileQuery';
 
 export default function useQuickSearchQuery() {
-  const router = useRouter();
-
   const [ searchTerm, setSearchTerm ] = React.useState('');
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const pathname = router.pathname;
 
   const quickSearchQuery = useApiQuery('quick_search', {
     queryParams: { q: debouncedSearchTerm },
@@ -50,6 +46,5 @@ export default function useQuickSearchQuery() {
     handleSearchTermChange: setSearchTerm,
     query,
     redirectCheckQuery,
-    pathname,
-  }), [ debouncedSearchTerm, pathname, redirectCheckQuery, searchTerm, query ]);
+  }), [ debouncedSearchTerm, query, redirectCheckQuery, searchTerm ]);
 }

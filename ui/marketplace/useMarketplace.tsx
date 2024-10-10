@@ -1,14 +1,14 @@
-import _pickBy from 'lodash/pickBy';
 import { useRouter } from 'next/router';
 import React from 'react';
 
 import type { ContractListTypes } from 'types/client/marketplace';
-import { MarketplaceCategory, MarketplaceDisplayType } from 'types/client/marketplace';
+import { MarketplaceCategory } from 'types/client/marketplace';
 
 import useDebounce from 'lib/hooks/useDebounce';
 import * as mixpanel from 'lib/mixpanel/index';
 import getQueryParamString from 'lib/router/getQueryParamString';
 
+import useRatings from './Rating/useRatings';
 import useMarketplaceApps from './useMarketplaceApps';
 import useMarketplaceCategories from './useMarketplaceCategories';
 
@@ -26,15 +26,9 @@ export default function useMarketplace() {
   const router = useRouter();
   const defaultCategoryId = getQueryParamString(router.query.category);
   const defaultFilterQuery = getQueryParamString(router.query.filter);
-  const defaultDisplayType = getQueryParamString(router.query.tab);
 
   const [ selectedAppId, setSelectedAppId ] = React.useState<string | null>(null);
   const [ selectedCategoryId, setSelectedCategoryId ] = React.useState<string>(MarketplaceCategory.ALL);
-  const [ selectedDisplayType, setSelectedDisplayType ] = React.useState<string>(
-    Object.values(MarketplaceDisplayType).includes(defaultDisplayType as MarketplaceDisplayType) ?
-      defaultDisplayType :
-      MarketplaceDisplayType.DEFAULT,
-  );
   const [ filterQuery, setFilterQuery ] = React.useState(defaultFilterQuery);
   const [ favoriteApps, setFavoriteApps ] = React.useState<Array<string>>([]);
   const [ isFavoriteAppsLoaded, setIsFavoriteAppsLoaded ] = React.useState<boolean>(false);
@@ -43,7 +37,7 @@ export default function useMarketplace() {
   const [ contractListModalType, setContractListModalType ] = React.useState<ContractListTypes | null>(null);
   const [ hasPreviousStep, setHasPreviousStep ] = React.useState<boolean>(false);
 
-  const handleFavoriteClick = React.useCallback((id: string, isFavorite: boolean, source: 'Discovery view' | 'Security view' | 'App modal') => {
+  const handleFavoriteClick = React.useCallback((id: string, isFavorite: boolean, source: 'Discovery view' | 'Security view' | 'App modal' | 'Banner') => {
     mixpanel.logEvent(mixpanel.EventTypes.PAGE_WIDGET, { Type: 'Favorite app', Info: id, Source: source });
 
     const favoriteApps = getFavoriteApps();
@@ -91,13 +85,10 @@ export default function useMarketplace() {
     setSelectedCategoryId(newCategory);
   }, []);
 
-  const handleDisplayTypeChange = React.useCallback((newDisplayType: MarketplaceDisplayType) => {
-    setSelectedDisplayType(newDisplayType);
-  }, []);
-
+  const { ratings, userRatings, rateApp, isRatingSending, isRatingLoading, canRate } = useRatings();
   const {
-    isPlaceholderData, isError, error, data, displayedApps,
-  } = useMarketplaceApps(debouncedFilterQuery, selectedCategoryId, favoriteApps, isFavoriteAppsLoaded);
+    isPlaceholderData, isError, error, data, displayedApps, setSorting,
+  } = useMarketplaceApps(debouncedFilterQuery, selectedCategoryId, favoriteApps, isFavoriteAppsLoaded, ratings);
   const {
     isPlaceholderData: isCategoriesPlaceholderData, data: categories,
   } = useMarketplaceCategories(data, isPlaceholderData);
@@ -117,25 +108,38 @@ export default function useMarketplace() {
   }, [ isPlaceholderData ]);
 
   React.useEffect(() => {
-    const query = _pickBy({
-      category: selectedCategoryId === MarketplaceCategory.ALL ? undefined : selectedCategoryId,
-      filter: debouncedFilterQuery,
-      tab: selectedDisplayType === MarketplaceDisplayType.DEFAULT ? undefined : selectedDisplayType,
-    }, Boolean);
+    if (isPlaceholderData) {
+      return;
+    }
+
+    const { query } = router;
+    const newQuery = { ...query };
+
+    if (selectedCategoryId !== MarketplaceCategory.ALL) {
+      newQuery.category = selectedCategoryId;
+    } else {
+      delete newQuery.category;
+    }
+
+    if (debouncedFilterQuery) {
+      newQuery.filter = debouncedFilterQuery;
+    } else {
+      delete newQuery.filter;
+    }
 
     if (debouncedFilterQuery.length > 0) {
       mixpanel.logEvent(mixpanel.EventTypes.LOCAL_SEARCH, { Source: 'Marketplace', 'Search query': debouncedFilterQuery });
     }
 
     router.replace(
-      { pathname: '/apps', query },
+      { pathname: '/apps', query: newQuery },
       undefined,
       { shallow: true },
     );
   // omit router in the deps because router.push() somehow modifies it
   // and we get infinite re-renders then
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ debouncedFilterQuery, selectedCategoryId, selectedDisplayType ]);
+  }, [ debouncedFilterQuery, selectedCategoryId, isPlaceholderData ]);
 
   return React.useMemo(() => ({
     selectedCategoryId,
@@ -146,6 +150,7 @@ export default function useMarketplace() {
     isError,
     error,
     categories,
+    apps: data,
     displayedApps,
     showAppInfo,
     selectedAppId,
@@ -159,14 +164,19 @@ export default function useMarketplace() {
     isCategoriesPlaceholderData,
     showContractList,
     contractListModalType,
-    selectedDisplayType,
-    onDisplayTypeChange: handleDisplayTypeChange,
     hasPreviousStep,
+    setSorting,
+    userRatings,
+    rateApp,
+    isRatingSending,
+    isRatingLoading,
+    canRate,
   }), [
     selectedCategoryId,
     categories,
     clearSelectedAppId,
     selectedAppId,
+    data,
     displayedApps,
     error,
     favoriteApps,
@@ -179,12 +189,15 @@ export default function useMarketplace() {
     isAppInfoModalOpen,
     isDisclaimerModalOpen,
     showDisclaimer,
-    data?.length,
     isCategoriesPlaceholderData,
     showContractList,
     contractListModalType,
-    selectedDisplayType,
-    handleDisplayTypeChange,
     hasPreviousStep,
+    setSorting,
+    userRatings,
+    rateApp,
+    isRatingSending,
+    isRatingLoading,
+    canRate,
   ]);
 }

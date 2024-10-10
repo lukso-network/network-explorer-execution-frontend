@@ -3,7 +3,7 @@ export interface AddressTag {
   address_hash: string;
   address: AddressParam;
   name: string;
-  id: string;
+  id: number;
 }
 
 export type AddressTags = Array<AddressTag>
@@ -36,6 +36,7 @@ export interface NotificationSettings {
   'native': NotificationDirection;
   'ERC-20': NotificationDirection;
   'ERC-721': NotificationDirection;
+  'ERC-404': NotificationDirection;
 }
 
 export interface NotificationMethods {
@@ -51,7 +52,7 @@ export interface Transaction {
 export interface TransactionTag {
   transaction_hash: string;
   name: string;
-  id: string;
+  id: number;
 }
 
 export type TransactionTags = Array<TransactionTag>
@@ -80,7 +81,7 @@ export interface WatchlistAddress {
   exchange_rate: string;
   notification_settings: NotificationSettings;
   notification_methods: NotificationMethods;
-  id: string;
+  id: number;
   address: AddressParam;
   tokens_count: number;
   tokens_fiat_value: string;
@@ -102,28 +103,11 @@ export type WatchlistResponse = {
   } | null;
 }
 
-export interface PublicTag {
-  website: string;
-  tags: string; // tag_1;tag_2;tag_3 etc.
-  is_owner: boolean;
-  id: number;
-  full_name: string;
-  email: string;
-  company: string;
-  addresses: Array<string>;
-  addresses_with_info: Array<AddressParam>;
-  additional_comment: string;
-}
-
-export type PublicTagNew = Omit<PublicTag, 'id' | 'addresses_with_info'>
-
-export type PublicTags = Array<PublicTag>;
-
 export type CustomAbis = Array<CustomAbi>
 
 export interface CustomAbi {
   name: string;
-  id: string;
+  id: number;
   contract_address_hash: string;
   contract_address: AddressParam;
   abi: Array<AbiItem>;
@@ -172,14 +156,6 @@ export type TransactionTagErrors = {
   tx_hash: Array<string>;
   name: Array<string>;
   identity_id?: Array<string>;
-}
-
-export type PublicTagErrors = {
-  additional_comment: Array<string>;
-  addresses: Array<string>;
-  email: Array<string>;
-  full_name: Array<string>;
-  tags: Array<string>;
 }
 
 export interface VerifiedAddress {

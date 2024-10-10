@@ -11,9 +11,10 @@ import type { TokenInstanceTransferPagination, TokenInstanceTransferResponse } f
 import type { TokenTransfer, TokenTransferPagination, TokenTransferResponse } from 'types/api/tokenTransfer';
 
 import { ADDRESS_PARAMS, ADDRESS_HASH } from './addressParams';
-import { BLOCK_HASH } from './block';
 import { TX_HASH } from './tx';
 import { generateListStub } from './utils';
+
+export const BLOCK_HASH = '0x8fa7b9e5e5e79deeb62d608db22ba9a5cb45388c7ebb9223ae77331c6080dc70';
 
 export const TOKEN_INFO_ERC_20: TokenInfo<'ERC-20'> = {
   address: ADDRESS_HASH,
@@ -169,7 +170,7 @@ export const TOKEN_INSTANCE: TokenInstance = {
     description: '**GENESIS #188882**, **8a77ca1bcaa4036f** :: *844th* generation of *#57806 and #57809* :: **eGenetic Hash Code (eDNA)** = *2822355e953a462d*',
     external_url: 'https://vipsland.com/nft/collections/genesis/188882',
     image: 'https://ipfs.vipsland.com/nft/collections/genesis/188882.gif',
-    name: 'GENESIS #188882, 8a77ca1bcaa4036f. Blockchain pixel PFP NFT + "on music video" trait inspired by God',
+    name: 'GENESIS #188882, 8a77ca1bcaa4036f',
   },
   owner: ADDRESS_PARAMS,
   holder_address_hash: ADDRESS_HASH,

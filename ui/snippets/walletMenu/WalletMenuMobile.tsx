@@ -1,21 +1,43 @@
 import { Drawer, DrawerOverlay, DrawerContent, DrawerBody, useDisclosure, IconButton } from '@chakra-ui/react';
 import React from 'react';
 
+import config from 'configs/app';
+import useApiQuery from 'lib/api/useApiQuery';
+import { useMarketplaceContext } from 'lib/contexts/marketplace';
 import useIsMobile from 'lib/hooks/useIsMobile';
 import * as mixpanel from 'lib/mixpanel/index';
-import AddressIdenticon from 'ui/shared/entities/address/AddressIdenticon';
 import IconSvg from 'ui/shared/IconSvg';
 import useWallet from 'ui/snippets/walletMenu/useWallet';
 import WalletMenuContent from 'ui/snippets/walletMenu/WalletMenuContent';
 
-import useMenuButtonColors from '../useMenuButtonColors';
+import WalletIdenticon from './WalletIdenticon';
 import WalletTooltip from './WalletTooltip';
 
-const WalletMenuMobile = () => {
+type ComponentProps = {
+  isWalletConnected: boolean;
+  address: string;
+  connect: () => void;
+  disconnect: () => void;
+  isModalOpening: boolean;
+  isModalOpen: boolean;
+  openModal: () => void;
+};
+
+export const WalletMenuMobile = (
+  { isWalletConnected, address, connect, disconnect, isModalOpening, isModalOpen, openModal }: ComponentProps,
+) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isWalletConnected, address, connect, disconnect, isModalOpening, isModalOpen } = useWallet({ source: 'Header' });
-  const { themedBackground, themedBorderColor, themedColor } = useMenuButtonColors();
   const isMobile = useIsMobile();
+  const { isAutoConnectDisabled } = useMarketplaceContext();
+  const addressDomainQuery = useApiQuery('address_domain', {
+    pathParams: {
+      chainId: config.chain.id,
+      address,
+    },
+    queryOptions: {
+      enabled: config.features.nameService.isEnabled,
+    },
+  });
 
   const openPopover = React.useCallback(() => {
     mixpanel.logEvent(mixpanel.EventTypes.WALLET_ACTION, { Action: 'Open' });
@@ -24,22 +46,28 @@ const WalletMenuMobile = () => {
 
   return (
     <>
-      <WalletTooltip isDisabled={ isWalletConnected || isMobile === undefined || !isMobile } isMobile>
+      <WalletTooltip
+        isDisabled={ isMobile === undefined || !isMobile }
+        isMobile
+        isWalletConnected={ isWalletConnected }
+        isAutoConnectDisabled={ isAutoConnectDisabled }
+      >
         <IconButton
           aria-label="wallet menu"
           icon={ isWalletConnected ?
-            <AddressIdenticon size={ 20 } hash={ address }/> :
-            <IconSvg name="wallet" boxSize={ 6 }/>
+            <WalletIdenticon address={ address } isAutoConnectDisabled={ isAutoConnectDisabled }/> :
+            <IconSvg name="wallet" boxSize={ 6 } p={ 0.5 }/>
           }
-          variant={ isWalletConnected ? 'subtle' : 'outline' }
-          colorScheme="gray"
+          variant="header"
+          data-selected={ isWalletConnected }
+          data-warning={ isAutoConnectDisabled }
           boxSize="40px"
           flexShrink={ 0 }
-          bg={ isWalletConnected ? themedBackground : undefined }
-          color={ themedColor }
-          borderColor={ !isWalletConnected ? themedBorderColor : undefined }
           onClick={ isWalletConnected ? openPopover : connect }
-          isLoading={ isModalOpening || isModalOpen }
+          isLoading={
+            ((isModalOpening || isModalOpen) && !isWalletConnected) ||
+            (addressDomainQuery.isLoading && isWalletConnected)
+          }
         />
       </WalletTooltip>
       { isWalletConnected && (
@@ -52,7 +80,14 @@ const WalletMenuMobile = () => {
           <DrawerOverlay/>
           <DrawerContent maxWidth="260px">
             <DrawerBody p={ 6 }>
-              <WalletMenuContent address={ address } disconnect={ disconnect }/>
+              <WalletMenuContent
+                address={ address }
+                ensDomainName={ addressDomainQuery.data?.domain?.name }
+                disconnect={ disconnect }
+                isAutoConnectDisabled={ isAutoConnectDisabled }
+                openWeb3Modal={ openModal }
+                closeWalletMenu={ onClose }
+              />
             </DrawerBody>
           </DrawerContent>
         </Drawer>
@@ -61,4 +96,23 @@ const WalletMenuMobile = () => {
   );
 };
 
-export default WalletMenuMobile;
+const WalletMenuMobileWrapper = () => {
+  const {
+    isWalletConnected, address, connect, disconnect,
+    isModalOpening, isModalOpen, openModal,
+  } = useWallet({ source: 'Header' });
+
+  return (
+    <WalletMenuMobile
+      isWalletConnected={ isWalletConnected }
+      address={ address }
+      connect={ connect }
+      disconnect={ disconnect }
+      isModalOpening={ isModalOpening }
+      isModalOpen={ isModalOpen }
+      openModal={ openModal }
+    />
+  );
+};
+
+export default WalletMenuMobileWrapper;
