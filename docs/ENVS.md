@@ -236,9 +236,7 @@ Settings for meta tags, OG tags and SEO
 | NEXT_PUBLIC_VIEWS_CONTRACT_SOLIDITYSCAN_ENABLED | `boolean` | Set to `true` if SolidityScan reports are supported | - | - | `true` | v1.19.0+ |
 | NEXT_PUBLIC_VIEWS_CONTRACT_EXTRA_VERIFICATION_METHODS | `Array<'solidity-hardhat' \| 'solidity-foundry'>` | Pass an array of additional methods from which users can choose while verifying a smart contract. Both methods are available by default, pass `'none'` string to disable them all. | - | - | `['solidity-hardhat']` | v1.33.0+ |
 | NEXT_PUBLIC_UNIVERSAL_PROFILES_API_URL | `string` | LUKSO UNIVERSAL PROFILE API URL used for getting various universal profile data | - | - | `https://api.universalprofile.com` | - |
-| NEXT_PUBLIC_ALGOLIA_APP_ID | `string` | Algolia App's ID | - | - | `ABCD1234` | - |
-| NEXT_PUBLIC_ALGOLIA_API_KEY | `string` | Algolia API key used for authenticating requests | - | - | `abcd1234defg5678 `| - |
-| NEXT_PUBLIC_ALGOLIA_INDEX_NAME | `string` | Index name from where data should be | - | - | `prod_mainnet_data`| - |
+| NEXT_PUBLIC_GRAPH_URL | `string` | URL of LUKSO Graph Indexer | - | - | `https://envio.mainnet.lukso.dev/`| - |
 
 ##### Address views list
 | Id | Description |
