@@ -909,17 +909,13 @@ const schema = yup
     NEXT_PUBLIC_RE_CAPTCHA_V3_APP_SITE_KEY: yup.string(), // DEPRECATED
     NEXT_PUBLIC_GOOGLE_ANALYTICS_PROPERTY_ID: yup.string(),
     NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN: yup.string(),
+    NEXT_PUBLIC_UNIVERSAL_PROFILES_API_URL: yup.string(),
+    NEXT_PUBLIC_GRAPH_URL: yup.string(),
     NEXT_PUBLIC_GROWTH_BOOK_CLIENT_KEY: yup.string(),
     NEXT_PUBLIC_ROLLBAR_CLIENT_TOKEN: yup.string(),
-    NEXT_PUBLIC_FAVICON_GENERATOR_API_KEY: yup.string(),
-    NEXT_PUBLIC_UP_API_URL: yup.string(),
-    NEXT_PUBLIC_UNIVERSAL_PROFILES_API_URL: yup.string(),
 
     // Misc
     NEXT_PUBLIC_USE_NEXT_JS_PROXY: yup.boolean(),
-    NEXT_PUBLIC_ALGOLIA_APP_ID: yup.string(),
-    NEXT_PUBLIC_ALGOLIA_API_KEY: yup.string(),
-    NEXT_PUBLIC_ALGOLIA_INDEX_NAME: yup.string(),
   })
   .concat(accountSchema)
   .concat(adsBannerSchema)
