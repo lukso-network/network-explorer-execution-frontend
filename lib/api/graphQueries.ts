@@ -8,7 +8,7 @@ export const constructQuery = (operationType: QueryOperation, queryParams?: stri
   return queryConstruct(queryParams);
 };
 
-export const searchProfileQuery = (queryParams?: string): string => `query search_profiles {
+const searchProfilesQuery = (queryParams?: string): string => `query search_profiles {
   search_profiles(args: { search: "${ queryParams }" }) {
     profileImages(order_by: { width: asc }) {
       src,
@@ -20,6 +20,22 @@ export const searchProfileQuery = (queryParams?: string): string => `query searc
   }
 }`;
 
+const profilesQuery = (queryParams?: string): string => `query profiles {
+  Profile(
+    limit: 50
+      where: { id: { _in: ${ queryParams } } }
+  ) {
+    profileImages(order_by: { width: asc }) {
+      src,
+      width,
+    },
+    id,
+    name,
+    fullName,
+  }
+}`;
+
 const queryConstructors: Record<QueryOperation, QueryConstructor> = {
-  search_profiles: searchProfileQuery,
+  search_profiles: searchProfilesQuery,
+  profiles: profilesQuery,
 };

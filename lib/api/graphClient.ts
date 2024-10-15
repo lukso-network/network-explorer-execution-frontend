@@ -10,6 +10,7 @@ const graphUrl = getEnvValue('NEXT_PUBLIC_GRAPH_URL') || '';
 type FetchFunc<T> = (queryParams?: string) => Promise<GraphResponse<T> | null>
 
 type GraphClient = {
+  searchProfiles: FetchFunc<SearchProfileQueryResponse>;
   getProfiles: FetchFunc<SearchProfileQueryResponse>;
 };
 
@@ -41,7 +42,8 @@ const fetchQuery = <T>(operationName: QueryOperation): FetchFunc<T> => {
 };
 
 const createGraphClient = (): GraphClient => ({
-  getProfiles: fetchQuery<SearchProfileQueryResponse>('search_profiles'),
+  searchProfiles: fetchQuery<SearchProfileQueryResponse>('search_profiles'),
+  getProfiles: fetchQuery<SearchProfileQueryResponse>('profiles'),
 });
 
 export const graphClient: GraphClient = createGraphClient();

@@ -1,17 +1,33 @@
 import { Box, Skeleton } from '@chakra-ui/react';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
+import { create, windowScheduler, keyResolver } from '@yornaath/batshit';
 import React from 'react';
 
-import type { UniversalProfileProxyResponse } from '../../../../types/api/universalProfile';
+import type { GraphResponse, UniversalProfileProxyResponse } from '../../../../types/api/universalProfile';
 
-import { getEnvValue } from '../../../../configs/app/utils';
-import { isUniversalProfileEnabled } from '../../../../lib/api/isUniversalProfileEnabled';
+import { graphClient } from 'lib/api/graphClient';
+import type { SearchProfileQueryResponse } from 'lib/api/graphTypes';
+
+//import { getEnvValue } from '../../../../configs/app/utils';
+//import { isUniversalProfileEnabled } from '../../../../lib/api/isUniversalProfileEnabled';
 
 interface Props {
   address: string;
   fallbackIcon: JSX.Element;
 }
+
+const profiles = create({
+  fetcher: async(addresses: Array<string>) => {
+    const resp = await graphClient.getProfiles(JSON.stringify(addresses));
+    
+
+    return resp.data;
+  },
+
+  resolver: keyResolver('address'),
+  scheduler: windowScheduler(1000),
+});
 
 export const formattedLuksoName = (hash: string, name: string | null) => {
   return `@${ name } (${ hash })`;
@@ -26,21 +42,22 @@ export const useUniversalProfile = (address: string): UseQueryResult<UniversalPr
     staleTime: 60 * 60 * 1000,
     queryKey: [ 'universalProfile', { address } ],
     queryFn: async() => {
-      if (!isUniversalProfileEnabled() || /0x0+$/i.test(address)) {
-        return null;
-      }
-      const upApiUrl =
-        getEnvValue('NEXT_PUBLIC_UNIVERSAL_PROFILES_API_URL') || '';
-      const networkId = getEnvValue('NEXT_PUBLIC_NETWORK_ID') || '42';
-
-      const url = `${ upApiUrl }/v1/${ networkId }/address/${ address }`;
-      try {
-        const resp = await fetch(url);
-        const json = await resp.json();
-        return json as UniversalProfileProxyResponse;
-      } catch (err) {
-        return null;
-      }
+      return profiles.fetch(address);
+      //if (!isUniversalProfileEnabled() || /0x0+$/i.test(address)) {
+      //  return null;
+      //}
+      //const upApiUrl =
+      //  getEnvValue('NEXT_PUBLIC_UNIVERSAL_PROFILES_API_URL') || '';
+      //const networkId = getEnvValue('NEXT_PUBLIC_NETWORK_ID') || '42';
+      //
+      //const url = `${ upApiUrl }/v1/${ networkId }/address/${ address }`;
+      //try {
+      //  const resp = await fetch(url);
+      //  const json = await resp.json();
+      //  return json as UniversalProfileProxyResponse;
+      //} catch (err) {
+      //  return null;
+      //}
     },
   });
 };
