@@ -43,7 +43,7 @@ const fetchQuery = <T>(operationName: QueryOperation): FetchFunc<T> => {
 
 const createGraphClient = (): GraphClient => ({
   searchProfiles: fetchQuery<SearchProfileQueryResponse>('search_profiles'),
-  getProfiles: fetchQuery<SearchProfileQueryResponse>('profiles'),
+  getProfiles: fetchQuery<SearchProfileQueryResponse>('Profile'),
 });
 
 export const graphClient: GraphClient = createGraphClient();

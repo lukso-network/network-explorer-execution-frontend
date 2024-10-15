@@ -20,7 +20,7 @@ const searchProfilesQuery = (queryParams?: string): string => `query search_prof
   }
 }`;
 
-const profilesQuery = (queryParams?: string): string => `query profiles {
+const profilesQuery = (queryParams?: string): string => `query Profile {
   Profile(
     limit: 50
       where: { id: { _in: ${ queryParams } } }
@@ -37,5 +37,5 @@ const profilesQuery = (queryParams?: string): string => `query profiles {
 
 const queryConstructors: Record<QueryOperation, QueryConstructor> = {
   search_profiles: searchProfilesQuery,
-  profiles: profilesQuery,
+  Profile: profilesQuery,
 };

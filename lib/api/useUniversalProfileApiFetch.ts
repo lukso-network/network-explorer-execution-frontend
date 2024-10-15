@@ -22,7 +22,7 @@ export default function useUniversalProfileApiFetch() {
       return [] as Array<SearchResultAddressOrContractOrUniversalProfile>;
     }
     try {
-      const result = await graphClient.getProfiles(queryParams);
+      const result = await graphClient.searchProfiles(queryParams);
       if (result == null) {
         return [] as Array<SearchResultAddressOrContractOrUniversalProfile>;
       }

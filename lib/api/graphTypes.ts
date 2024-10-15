@@ -15,5 +15,4 @@ export type GraphQuery = {
   query: string;
 };
 
-export type QueryOperation = 'search_profiles' | 'profiles';
-
+export type QueryOperation = 'search_profiles' | 'Profile';
