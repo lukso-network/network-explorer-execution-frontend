@@ -46,7 +46,7 @@
     "@emotion/styled": "^11.10.4",
     "@growthbook/growthbook-react": "0.21.0",
     "@hypelab/sdk-react": "^1.0.0",
-    "@lukso/web-components": "^1.47.1",
+    "@lukso/web-components": "^1.90.0",
     "@metamask/post-message-stream": "^7.0.0",
     "@metamask/providers": "^10.2.1",
     "@monaco-editor/react": "^4.4.6",

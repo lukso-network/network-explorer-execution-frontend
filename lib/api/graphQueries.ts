@@ -25,7 +25,7 @@ const profilesQuery = (queryParams?: string): string => `query Profile {
     limit: 50
       where: { id: { _in: ${ queryParams } } }
   ) {
-    profileImages(order_by: { width: asc }) {
+    profileImages( where: { error: { _is_null: true } }, order_by: { width: asc }) {
       src,
       width,
     },
