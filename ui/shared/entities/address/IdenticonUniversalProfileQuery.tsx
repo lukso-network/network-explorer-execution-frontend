@@ -30,6 +30,14 @@ export const formattedLuksoName = (hash: string, name: string | null) => {
   return `@${ name } (${ hash })`;
 };
 
+const resizeProfileImage = (imageUrl: string): string => {
+  if (imageUrl.includes('api.universalprofile.cloud/image')) {
+    imageUrl += '&width=40&height=40';
+  }
+
+  return imageUrl;
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useUniversalProfile = (address: string): UseQueryResult<SearchProfileQueryResponse | null> => {
   return useQuery({
@@ -56,9 +64,8 @@ export const IdenticonUniversalProfile: React.FC<Props> = ({
       Object.values(up?.profileImages || {}).length - 1;
 
     profileImageUrl = hasProfileImages ?
-      up?.profileImages[lastImageIndex].src :
+      resizeProfileImage(up?.profileImages[lastImageIndex].src) :
       '';
-
   }
 
   return (

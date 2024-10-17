@@ -2,6 +2,7 @@ import React from 'react';
 
 import type { SearchResultAddressOrContractOrUniversalProfile } from '../../types/api/search';
 
+import getCheckedSummedAddress from 'lib/address/getCheckedSummedAddress';
 import type { Params as FetchParams } from 'lib/hooks/useFetch';
 
 import { graphClient } from './graphClient';
@@ -34,7 +35,7 @@ export default function useUniversalProfileApiFetch() {
         return {
           type: 'universal_profile',
           name: hitAsUp.name !== '' ? hitAsUp.name.trim() : null,
-          address: hit.id,
+          address: getCheckedSummedAddress(hit.id),
           is_smart_contract_verified: false,
         };
       });
