@@ -128,7 +128,7 @@ const Content = chakra((props: ContentProps) => {
     );
   }
   const { data: upData, isLoading: upIsLoading } = useUniversalProfile(props.address.hash);
-  const upName = upIsLoading ? '' : upData?.LSP3Profile?.name ?? '';
+  const upName = upIsLoading ? '' : upData?.name ?? '';
 
   const displayedName = upName !== '' ? formattedLuksoName(props.address.hash, upName) : props.address.hash;
   return (

@@ -257,7 +257,6 @@ Settings for meta tags, OG tags and SEO
 | NEXT_PUBLIC_VIEWS_CONTRACT_SOLIDITYSCAN_ENABLED | `boolean` | Set to `true` if SolidityScan reports are supported | - | - | `true` | v1.19.0+ |
 | NEXT_PUBLIC_VIEWS_CONTRACT_EXTRA_VERIFICATION_METHODS | `Array<'solidity-hardhat' \| 'solidity-foundry'>` | Pass an array of additional methods from which users can choose while verifying a smart contract. Both methods are available by default, pass `'none'` string to disable them all. | - | - | `['solidity-hardhat']` | v1.33.0+ |
 | NEXT_PUBLIC_VIEWS_CONTRACT_LANGUAGE_FILTERS | `Array<'solidity' \| 'vyper' \| 'yul' \| 'scilla'>` | Pass an array of contract languages that will be displayed as options in the filter on the verified contract page. | - | `['solidity','vyper','yul']` | `['solidity','vyper','yul','scilla']` | v1.37.0+ |
-| NEXT_PUBLIC_UNIVERSAL_PROFILES_API_URL | `string` | LUKSO UNIVERSAL PROFILE API URL used for getting various universal profile data | - | - | `https://api.universalprofile.com` | - |
 | NEXT_PUBLIC_GRAPH_URL | `string` | URL of LUKSO Graph Indexer | - | - | `https://envio.mainnet.lukso.dev/`| - |
 
 ##### Address views list

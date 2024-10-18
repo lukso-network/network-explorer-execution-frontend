@@ -1,47 +1,53 @@
 import { Box } from '@chakra-ui/react';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
+import { create, windowScheduler, keyResolver } from '@yornaath/batshit';
 import React from 'react';
 
-import type { UniversalProfileProxyResponse } from '../../../../types/api/universalProfile';
-
+import { graphClient } from 'lib/api/graphClient';
+import type { SearchProfileQueryResponse } from 'lib/api/graphTypes';
 import Skeleton from 'ui/shared/chakra/Skeleton';
-
-import { getEnvValue } from '../../../../configs/app/utils';
-import { isUniversalProfileEnabled } from '../../../../lib/api/isUniversalProfileEnabled';
 
 interface Props {
   address: string;
   fallbackIcon: React.JSX.Element;
 }
 
+const profiles = create({
+  fetcher: async(addresses: Array<string>) => {
+    const resp = await graphClient.getProfiles(JSON.stringify(addresses));
+    if (resp === null) {
+      return [] as Array<SearchProfileQueryResponse>;
+    }
+
+    return resp.data.Profile;
+  },
+
+  resolver: keyResolver('id'),
+  scheduler: windowScheduler(2000),
+});
+
 export const formattedLuksoName = (hash: string, name: string | null) => {
   return `@${ name } (${ hash })`;
 };
 
-export const useUniversalProfile = (address: string): UseQueryResult<UniversalProfileProxyResponse | null> => {
+const resizeProfileImage = (imageUrl: string): string => {
+  if (imageUrl.includes('api.universalprofile.cloud/image')) {
+    imageUrl += '&width=40&height=40';
+  }
+
+  return imageUrl;
+};
+
+export const useUniversalProfile = (address: string): UseQueryResult<SearchProfileQueryResponse | null> => {
   return useQuery({
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retryOnMount: false,
     staleTime: 60 * 60 * 1000,
-    queryKey: [ 'universalProfile', { address } ],
+    queryKey: [ 'universalProfile', address ],
     queryFn: async() => {
-      if (!isUniversalProfileEnabled() || /0x0+$/i.test(address)) {
-        return null;
-      }
-      const upApiUrl =
-        getEnvValue('NEXT_PUBLIC_UNIVERSAL_PROFILES_API_URL') || '';
-      const networkId = getEnvValue('NEXT_PUBLIC_NETWORK_ID') || '42';
-
-      const url = `${ upApiUrl }/v1/${ networkId }/address/${ address }`;
-      try {
-        const resp = await fetch(url);
-        const json = await resp.json();
-        return json as UniversalProfileProxyResponse;
-      } catch (err) {
-        return null;
-      }
+      return profiles.fetch(address.toLowerCase());
     },
   });
 };
@@ -50,15 +56,15 @@ export const IdenticonUniversalProfile: React.FC<Props> = ({
   address,
   fallbackIcon,
 }) => {
-  const { data: up, isLoading } = useUniversalProfile(address);
-
+  const { data: up, isLoading } = useUniversalProfile(address.toLowerCase());
   let profileImageUrl = '';
-  if (up?.LSP3Profile?.profileImage !== null && up?.hasProfileImage) {
+  const hasProfileImages = up?.profileImages !== null && up?.profileImages !== undefined && up?.profileImages.length > 0;
+  if (hasProfileImages) {
     const lastImageIndex =
-      Object.values(up?.LSP3Profile?.profileImage || {}).length - 1;
+      Object.values(up?.profileImages || {}).length - 1;
 
-    profileImageUrl = up?.hasProfileImage ?
-      up?.LSP3Profile?.profileImage[lastImageIndex].url :
+    profileImageUrl = hasProfileImages ?
+      resizeProfileImage(up?.profileImages[lastImageIndex].src) :
       '';
   }
 
