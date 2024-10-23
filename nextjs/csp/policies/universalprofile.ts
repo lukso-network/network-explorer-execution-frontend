@@ -7,6 +7,7 @@ export function universalProfile(): CspDev.DirectiveDescriptor {
       '*.algolianet.com',
       '*.algolia.net',
       'envio.mainnet.lukso.dev',
+      'envio.lukso-mainnet.universal.tech',
     ],
   };
 }
