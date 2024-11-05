@@ -6,8 +6,8 @@ export type ProfileImage = {
 export type SearchProfileQueryResponse = {
   profileImages: Array<ProfileImage>;
   id: string;
-  name: string;
-  fullName: string;
+  name: string | null;
+  fullName: string | null;
 };
 
 export type GraphQuery = {
