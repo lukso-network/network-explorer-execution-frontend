@@ -34,7 +34,7 @@ export default function useUniversalProfileApiFetch() {
         const hitAsUp = hit as unknown as SearchProfileQueryResponse;
         return {
           type: 'universal_profile',
-          name: hitAsUp.name !== '' ? hitAsUp.name.trim() : null,
+          name: hitAsUp.name != null && hitAsUp.name !== '' ? hitAsUp.name.trim() : null,
           address: getCheckedSummedAddress(hit.id),
           is_smart_contract_verified: false,
         };
