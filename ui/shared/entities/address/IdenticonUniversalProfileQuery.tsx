@@ -6,6 +6,7 @@ import React from 'react';
 
 import { graphClient } from 'lib/api/graphClient';
 import type { SearchProfileQueryResponse } from 'lib/api/graphTypes';
+import { isUniversalProfileEnabled } from 'lib/api/isUniversalProfileEnabled';
 
 interface Props {
   address: string;
@@ -14,6 +15,10 @@ interface Props {
 
 const profiles = create({
   fetcher: async(addresses: Array<string>) => {
+    if (!isUniversalProfileEnabled()) {
+      return [] as Array<SearchProfileQueryResponse>;
+    }
+
     const resp = await graphClient.getProfiles(JSON.stringify(addresses));
     if (resp === null) {
       return [] as Array<SearchProfileQueryResponse>;
