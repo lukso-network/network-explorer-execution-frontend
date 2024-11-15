@@ -6,11 +6,15 @@ import * as EntityBase from 'ui/shared/entities/base/components';
 
 import type { ContentProps } from './AddressEntity';
 import AddressEntity from './AddressEntity';
+import { formattedLuksoName, useUniversalProfile } from './IdenticonUniversalProfileQuery';
 
 const AddressEntityContentProxy = (props: ContentProps) => {
   const bgColor = useColorModeValue('gray.700', 'gray.900');
 
   const implementations = props.address.implementations;
+
+  const { data: upData, isLoading: upIsLoading } = useUniversalProfile(props.address.hash);
+  const upName = upIsLoading ? '' : upData?.name ?? '';
 
   const handleClick = React.useCallback((event: React.MouseEvent) => {
     event.stopPropagation();
@@ -25,14 +29,19 @@ const AddressEntityContentProxy = (props: ContentProps) => {
 
   const implementationName = implementations.length === 1 && implementations[0].name ? implementations[0].name : undefined;
 
+  const fallback = nameTag || implementationName || props.address.name || props.altHash || props.address.hash;
+  const displayedText = upName !== '' ? formattedLuksoName(props.address.hash, upName) : fallback;
+  const truncation = nameTag || implementationName || props.address.name ? 'tail' : props.truncation;
+  const upTruncation = upName !== '' ? 'dynamic' : truncation;
+
   return (
     <Popover trigger="hover" isLazy gutter={ 8 }>
       <PopoverTrigger>
         <Box display="inline-flex" w="100%">
           <EntityBase.Content
             { ...props }
-            truncation={ nameTag || implementationName || props.address.name ? 'tail' : props.truncation }
-            text={ nameTag || implementationName || props.address.name || props.altHash || props.address.hash }
+            truncation={ upTruncation }
+            text={ displayedText }
             isTooltipDisabled
           />
         </Box>

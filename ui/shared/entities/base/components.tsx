@@ -117,7 +117,6 @@ export interface ContentBaseProps extends Pick<EntityBaseProps, 'className' | 'i
 }
 
 const Content = chakra(({ className, isLoading, asProp, text, truncation = 'dynamic', tailLength, isTooltipDisabled }: ContentBaseProps) => {
-
   const children = (() => {
     switch (truncation) {
       case 'constant_long':
@@ -139,7 +138,7 @@ const Content = chakra(({ className, isLoading, asProp, text, truncation = 'dyna
         );
       case 'dynamic':
         return (
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
         // @ts-ignore
           <HashStringShortenDynamic
             hash={ text }
