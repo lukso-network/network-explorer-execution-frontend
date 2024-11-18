@@ -74,9 +74,9 @@ export const IdenticonUniversalProfile: React.FC<Props> = ({
   }
 
   return (
-    <Skeleton isLoaded={ !isLoading }>
+    <Skeleton mr={ profileImageUrl ? 2 : 0 } isLoaded={ !isLoading }>
       { profileImageUrl ? (
-        <Box mx={ 2 }>
+        <Box style={{ transform: 'scale(0.8)' }} ml={ -0.25 }>
           <lukso-profile
             size="x-small"
             profile-url={ profileImageUrl }
