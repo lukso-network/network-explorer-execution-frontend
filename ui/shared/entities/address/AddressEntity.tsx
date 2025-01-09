@@ -16,7 +16,7 @@ import * as EntityBase from 'ui/shared/entities/base/components';
 import { distributeEntityProps, getIconProps } from '../base/utils';
 import AddressEntityContentProxy from './AddressEntityContentProxy';
 import AddressIdenticon from './AddressIdenticon';
-import { getUniversalProfile, IdenticonUniversalProfile } from './IdenticonUniversalProfileQuery';
+import { formattedLuksoName, getUniversalProfile, IdenticonUniversalProfile } from './IdenticonUniversalProfileQuery';
 if (process.browser) {
   import('@lukso/web-components/dist/components/lukso-profile');
 }
@@ -144,7 +144,7 @@ const Content = chakra((props: ContentProps) => {
     })();
   }, [ props.address.hash, queryClient ]);
 
-  const displayedName = upName !== '' ? `@${ upName } (${ props.address.hash })` : props.address.hash;
+  const displayedName = upName !== '' ? formattedLuksoName(props.address.hash, upName) : props.address.hash;
   return (
     <EntityBase.Content
       { ...props }
