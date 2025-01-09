@@ -1,3 +1,6 @@
+import type { LuksoProfile } from '@lukso/web-components/dist/components/lukso-profile';
+import type * as React from 'react';
+
 import type { WalletProvider } from 'types/web3';
 
 type CPreferences = {
@@ -5,6 +8,11 @@ type CPreferences = {
   width: string;
   height: string;
 };
+
+type WebComponent<T> =
+  | (React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> &
+      Partial<T>)
+  | { children?: React.ReactNode; 'class'?: string };
 
 declare global {
   export interface Window {
@@ -24,6 +32,12 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       NODE_ENV: 'development' | 'production';
+    }
+  }
+
+  namespace JSX {
+    interface IntrinsicElements {
+      'lukso-profile': WebComponent<LuksoProfile>;
     }
   }
 }
