@@ -1,11 +1,13 @@
 import type { As } from '@chakra-ui/react';
 import { Box, Flex, Tooltip, chakra, VStack } from '@chakra-ui/react';
-import React from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
 
 import type { AddressParam } from 'types/api/addressParams';
 
 import { route } from 'nextjs-routes';
 
+import { getEnvValue } from 'configs/app/utils';
 import { toBech32Address } from 'lib/address/bech32';
 import { useAddressHighlightContext } from 'lib/contexts/addressHighlight';
 import { useSettingsContext } from 'lib/contexts/settings';
@@ -15,9 +17,10 @@ import * as EntityBase from 'ui/shared/entities/base/components';
 import { distributeEntityProps, getIconProps } from '../base/utils';
 import AddressEntityContentProxy from './AddressEntityContentProxy';
 import AddressIdenticon from './AddressIdenticon';
-import { IdenticonUniversalProfile } from './IdenticonUniversalProfileQuery';
+import { getUniversalProfile, IdenticonUniversalProfile } from './IdenticonUniversalProfileQuery';
 if (process.browser) {
   import('@lukso/web-components/dist/components/lukso-profile');
+  import('@lukso/web-components/dist/components/lukso-username');
 }
 
 type LinkProps = EntityBase.LinkBaseProps & Pick<EntityProps, 'address'>;
@@ -83,7 +86,7 @@ const Icon = (props: IconProps) => {
       </Tooltip>
     );
 
-    if (process.browser) {
+    if (getEnvValue('NEXT_PUBLIC_VIEWS_ADDRESS_IDENTICON_TYPE') === 'universal_profile') {
       return <IdenticonUniversalProfile address={ props.address.hash } fallbackIcon={ contractIcon }/>;
     }
 
@@ -129,6 +132,33 @@ const Content = chakra((props: ContentProps) => {
           { nameText }
         </Skeleton>
       </Tooltip>
+    );
+  }
+
+  const queryClient = useQueryClient();
+  const [ upName, setUpName ] = useState('');
+
+  useEffect(() => {
+    (async() => {
+      const upData = await getUniversalProfile(props.address.hash, queryClient);
+      if (upData === undefined) {
+        return;
+      }
+      if (upData.LSP3Profile !== undefined) {
+        setUpName(upData.LSP3Profile.name);
+      }
+    })();
+  }, [ props.address.hash, queryClient ]);
+
+  if (upName !== '') {
+    return (
+      <lukso-username
+        name={ upName }
+        address={ props.address.hash }
+        hide-prefix={ true }
+        size="medium"
+        slice-by=""
+      ></lukso-username>
     );
   }
 
