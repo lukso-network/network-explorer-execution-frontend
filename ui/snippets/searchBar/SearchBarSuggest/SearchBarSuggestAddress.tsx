@@ -1,5 +1,6 @@
 import { chakra, Box, Text, Flex } from '@chakra-ui/react';
-import React from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
 
 import type { ItemsProps } from './types';
 import type { SearchResultAddressOrContract } from 'types/api/search';
@@ -12,15 +13,30 @@ import * as AddressEntity from 'ui/shared/entities/address/AddressEntity';
 import { ADDRESS_REGEXP } from 'ui/shared/forms/validators/address';
 import HashStringShortenDynamic from 'ui/shared/HashStringShortenDynamic';
 
+import { getUniversalProfile } from '../../../shared/entities/address/IdenticonUniversalProfileQuery';
+
 const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: ItemsProps<SearchResultAddressOrContract>) => {
   const shouldHighlightHash = ADDRESS_REGEXP.test(searchTerm);
   const hash = data.filecoin_robust_address || (addressFormat === 'bech32' ? toBech32Address(data.address) : data.address);
+  const queryClient = useQueryClient();
+  const [ type, setType ] = useState(data.type);
+  useEffect(() => { // this causes a sort of loading state where the address suddenly switches to up name - needs fix?
+    (async() => {
+      const upData = await getUniversalProfile(data.address, queryClient);
+      if (upData === undefined) {
+        return;
+      }
+      if (upData.LSP3Profile !== undefined) {
+        setType('contract'); // when the type is contract the icon will know that it needs to get UP profile picture
+      }
+    })();
+  }, [ data, queryClient, setType ]);
 
   const icon = (
     <AddressEntity.Icon
       address={{
         hash: data.address,
-        is_contract: data.type === 'contract',
+        is_contract: type === 'contract',
         name: '',
         is_verified: data.is_smart_contract_verified,
         ens_domain_name: null,

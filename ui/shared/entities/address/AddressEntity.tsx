@@ -7,7 +7,6 @@ import type { AddressParam } from 'types/api/addressParams';
 
 import { route } from 'nextjs-routes';
 
-import { getEnvValue } from 'configs/app/utils';
 import { toBech32Address } from 'lib/address/bech32';
 import { useAddressHighlightContext } from 'lib/contexts/addressHighlight';
 import { useSettingsContext } from 'lib/contexts/settings';
@@ -86,11 +85,7 @@ const Icon = (props: IconProps) => {
       </Tooltip>
     );
 
-    if (getEnvValue('NEXT_PUBLIC_VIEWS_ADDRESS_IDENTICON_TYPE') === 'universal_profile') {
-      return <IdenticonUniversalProfile address={ props.address.hash } fallbackIcon={ contractIcon }/>;
-    }
-
-    return contractIcon;
+    return <IdenticonUniversalProfile address={ props.address.hash } fallbackIcon={ contractIcon }/>;
   }
 
   return (
@@ -138,7 +133,7 @@ const Content = chakra((props: ContentProps) => {
   const queryClient = useQueryClient();
   const [ upName, setUpName ] = useState('');
 
-  useEffect(() => {
+  useEffect(() => { // this causes a sort of loading state where the address suddenly switches to up name - needs fix?
     (async() => {
       const upData = await getUniversalProfile(props.address.hash, queryClient);
       if (upData === undefined) {
@@ -150,22 +145,11 @@ const Content = chakra((props: ContentProps) => {
     })();
   }, [ props.address.hash, queryClient ]);
 
-  if (upName !== '') {
-    return (
-      <lukso-username
-        name={ upName }
-        address={ props.address.hash }
-        hide-prefix={ true }
-        size="medium"
-        slice-by=""
-      ></lukso-username>
-    );
-  }
-
+  const displayedName = upName !== '' ? `@${ upName } (${ props.address.hash })` : props.address.hash;
   return (
     <EntityBase.Content
       { ...props }
-      text={ displayedAddress }
+      text={ displayedName }
     />
   );
 });
