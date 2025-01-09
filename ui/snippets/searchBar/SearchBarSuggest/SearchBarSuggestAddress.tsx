@@ -2,6 +2,7 @@ import { chakra, Box, Text, Flex } from '@chakra-ui/react';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 
+import type { UPResponse } from '../../../../types/api/universalProfile';
 import type { ItemsProps } from './types';
 import type { SearchResultAddressOrContract } from 'types/api/search';
 
@@ -20,17 +21,25 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: 
   const hash = data.filecoin_robust_address || (addressFormat === 'bech32' ? toBech32Address(data.address) : data.address);
   const queryClient = useQueryClient();
   const [ type, setType ] = useState(data.type);
+  const [ up, setUp ] = useState({} as UPResponse);
+  const [ displayedName, setDisplayedName ] = useState(hash);
+
   useEffect(() => { // this causes a sort of loading state where the address suddenly switches to up name - needs fix?
     (async() => {
       const upData = await getUniversalProfile(data.address, queryClient);
       if (upData === undefined) {
         return;
       }
-      if (upData.LSP3Profile !== undefined) {
-        setType('contract'); // when the type is contract the icon will know that it needs to get UP profile picture
+
+      setUp(upData); // when the type is contract the icon will know that it needs to get UP profile picture
+      if (up.LSP3Profile !== undefined) {
+        setType('contract');
+        if (up.hasProfileImage) {
+          setDisplayedName(`@${ up.LSP3Profile.name } (${ data.address })`);
+        }
       }
     })();
-  }, [ data, queryClient, setType ]);
+  }, [ data, up, queryClient, setUp, setType, setDisplayedName ]);
 
   const icon = (
     <AddressEntity.Icon
@@ -65,7 +74,7 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: 
       { data.certified && <ContractCertifiedLabel boxSize={ 4 } iconSize={ 4 } ml={ 1 }/> }
     </Flex>
   );
-  const addressEl = <HashStringShortenDynamic hash={ hash } isTooltipDisabled/>;
+  const addressEl = <HashStringShortenDynamic hash={ displayedName } isTooltipDisabled/>;
 
   if (isMobile) {
     return (
