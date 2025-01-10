@@ -88,7 +88,15 @@ export interface SearchResultUserOp {
   url?: string; // not used by the frontend, we build the url ourselves
 }
 
-export type SearchResultItem = SearchResultToken | SearchResultAddressOrContract | SearchResultBlock | SearchResultTx | SearchResultLabel | SearchResultUserOp |
+export interface SearchResultUniversalProfile {
+  type: 'universal profile';
+  name: string | null;
+  address: string;
+  url?: string; // not used by the frontend, we build the url ourselves
+}
+
+export type SearchResultItem =
+    SearchResultToken | SearchResultAddressOrContract | SearchResultBlock | SearchResultTx | SearchResultLabel | SearchResultUniversalProfile |
 SearchResultBlob | SearchResultDomain;
 
 export interface SearchResult {

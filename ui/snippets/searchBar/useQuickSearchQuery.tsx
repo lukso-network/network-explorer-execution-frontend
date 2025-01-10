@@ -4,6 +4,8 @@ import { isBech32Address, fromBech32Address } from 'lib/address/bech32';
 import useApiQuery from 'lib/api/useApiQuery';
 import useDebounce from 'lib/hooks/useDebounce';
 
+import useUniversalProfileQuery from '../../../lib/api/useUniversalProfileQuery';
+
 export default function useQuickSearchQuery() {
   const [ searchTerm, setSearchTerm ] = React.useState('');
 
@@ -19,6 +21,11 @@ export default function useQuickSearchQuery() {
     // in order to prepend its result to suggest list since this resource is much faster than regular search
     queryParams: { q: debouncedSearchTerm },
     queryOptions: { enabled: Boolean(debouncedSearchTerm) },
+  });
+
+  const upQuery = useUniversalProfileQuery('up_profiles', {
+    queryParams: { q: debouncedSearchTerm },
+    queryOptions: { enabled: debouncedSearchTerm.trim().length > 0 },
   });
 
   return React.useMemo(() => ({
