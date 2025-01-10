@@ -11,7 +11,7 @@ type CPreferences = {
 
 type WebComponent<T> =
   | (React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> &
-      Partial<T>)
+  Partial<T>)
   | { children?: React.ReactNode; 'class'?: string };
 
 declare global {

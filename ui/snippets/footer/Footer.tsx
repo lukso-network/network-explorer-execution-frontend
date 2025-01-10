@@ -128,6 +128,9 @@ const Footer = () => {
             />
           </Link>
         </Flex>
+        <Box mt={{ base: 5, lg: '44px' }}>
+          <Link fontSize="xs" href="https://lukso.network/">lukso.network</Link>
+        </Box>
         <Text mt={ 3 } fontSize="xs">
           Blockscout is a tool for inspecting and analyzing EVM based blockchains. Blockchain explorer for Ethereum Networks.
         </Text>

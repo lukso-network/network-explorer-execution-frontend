@@ -8,63 +8,63 @@ declare module 'yup' {
 
 import * as yup from 'yup';
 
-import type { AdButlerConfig } from "../../../types/client/adButlerConfig";
+import type { AdButlerConfig } from '../../../types/client/adButlerConfig';
 import {
   SUPPORTED_AD_TEXT_PROVIDERS,
   SUPPORTED_AD_BANNER_PROVIDERS,
-} from "../../../types/client/adProviders";
+} from '../../../types/client/adProviders';
 import type {
   AdTextProviders,
   AdBannerProviders,
-} from "../../../types/client/adProviders";
-import type { MarketplaceAppOverview } from "../../../types/client/marketplace";
-import { NAVIGATION_LINK_IDS } from "../../../types/client/navigation-items";
+} from '../../../types/client/adProviders';
+import type { MarketplaceAppOverview } from '../../../types/client/marketplace';
+import { NAVIGATION_LINK_IDS } from '../../../types/client/navigation-items';
 import type {
   NavItemExternal,
   NavigationLinkId,
-} from "../../../types/client/navigation-items";
+} from '../../../types/client/navigation-items';
 import type {
   BridgedTokenChain,
   TokenBridge,
-} from "../../../types/client/token";
-import type { WalletType } from "../../../types/client/wallets";
-import { SUPPORTED_WALLETS } from "../../../types/client/wallets";
-import type { CustomLink, CustomLinksGroup } from "../../../types/footerLinks";
-import type { ChainIndicatorId } from "../../../types/homepage";
+} from '../../../types/client/token';
+import type { WalletType } from '../../../types/client/wallets';
+import { SUPPORTED_WALLETS } from '../../../types/client/wallets';
+import type { CustomLink, CustomLinksGroup } from '../../../types/footerLinks';
+import type { ChainIndicatorId } from '../../../types/homepage';
 import {
   type NetworkVerificationType,
   type NetworkExplorer,
   type FeaturedNetwork,
   NETWORK_GROUPS,
-} from "../../../types/networks";
-import type { AddressViewId } from "../../../types/views/address";
+} from '../../../types/networks';
+import type { AddressViewId } from '../../../types/views/address';
 import {
   ADDRESS_VIEWS_IDS,
   IDENTICON_TYPES,
-} from "../../../types/views/address";
-import { BLOCK_FIELDS_IDS } from "../../../types/views/block";
-import type { BlockFieldId } from "../../../types/views/block";
-import type { NftMarketplaceItem } from "../../../types/views/nft";
-import type { TxAdditionalFieldsId, TxFieldsId } from "../../../types/views/tx";
+} from '../../../types/views/address';
+import { BLOCK_FIELDS_IDS } from '../../../types/views/block';
+import type { BlockFieldId } from '../../../types/views/block';
+import type { NftMarketplaceItem } from '../../../types/views/nft';
+import type { TxAdditionalFieldsId, TxFieldsId } from '../../../types/views/tx';
 import {
   TX_ADDITIONAL_FIELDS_IDS,
   TX_FIELDS_IDS,
-} from "../../../types/views/tx";
+} from '../../../types/views/tx';
 
-import { replaceQuotes } from "../../../configs/app/utils";
-import * as regexp from "../../../lib/regexp";
+import { replaceQuotes } from '../../../configs/app/utils';
+import * as regexp from '../../../lib/regexp';
 
-const protocols = ["http", "https"];
+const protocols = [ 'http', 'https' ];
 
 const urlTest: yup.TestConfig = {
-  name: "url",
+  name: 'url',
   test: (value: unknown) => {
     if (!value) {
       return true;
     }
 
     try {
-      if (typeof value === "string") {
+      if (typeof value === 'string') {
         new URL(value);
         return true;
       }
@@ -72,7 +72,7 @@ const urlTest: yup.TestConfig = {
 
     return false;
   },
-  message: "${path} is not a valid URL",
+  message: '${path} is not a valid URL',
   exclusive: true,
 };
 
@@ -271,7 +271,7 @@ const beaconChainSchema = yup
         then: (schema) => schema.min(1).optional(),
         otherwise: (schema) => schema.max(
           -1,
-          "NEXT_PUBLIC_MARKETPLACE_SUBMIT_FORM cannot not be used without NEXT_PUBLIC_MARKETPLACE_CONFIG_URL"
+          'NEXT_PUBLIC_MARKETPLACE_SUBMIT_FORM cannot not be used without NEXT_PUBLIC_MARKETPLACE_CONFIG_URL',
         ),
     }),
 });
@@ -517,7 +517,7 @@ const bridgedTokenChainSchema: yup.ObjectSchema<BridgedTokenChain> = yup.object(
     title: yup.string().required(),
     short_title: yup.string().required(),
     base_url: yup.string().test(urlTest).required(),
-  }
+  },
 );
 
 const tokenBridgeSchema: yup.ObjectSchema<TokenBridge> = yup.object({
@@ -537,13 +537,13 @@ const bridgedTokensSchema = yup.object().shape({
     .transform(replaceQuotes)
     .json()
     .of(tokenBridgeSchema)
-    .when("NEXT_PUBLIC_BRIDGED_TOKENS_CHAINS", {
+    .when('NEXT_PUBLIC_BRIDGED_TOKENS_CHAINS', {
       is: (value: Array<unknown>) => value && value.length > 0,
       then: (schema) => schema.required(),
       otherwise: (schema) =>
         schema.max(
           -1,
-          "NEXT_PUBLIC_BRIDGED_TOKENS_BRIDGES cannot not be used without NEXT_PUBLIC_BRIDGED_TOKENS_CHAINS"
+          'NEXT_PUBLIC_BRIDGED_TOKENS_BRIDGES cannot not be used without NEXT_PUBLIC_BRIDGED_TOKENS_CHAINS',
         ),
     }),
 });
@@ -569,7 +569,7 @@ const multichainProviderConfigSchema: yup.ObjectSchema<MultichainProviderConfig>
 const schema = yup
   .object()
   .noUnknown(true, (params) => {
-    return `Unknown ENV variables were provided: ${params.unknown}`;
+    return `Unknown ENV variables were provided: ${ params.unknown }`;
   })
   .shape({
     // I. Build-time ENVs
@@ -616,7 +616,7 @@ const schema = yup
     NEXT_PUBLIC_API_HOST: yup.string().required(),
     NEXT_PUBLIC_API_PORT: yup.number().integer().positive(),
     NEXT_PUBLIC_API_BASE_PATH: yup.string(),
-    NEXT_PUBLIC_API_WEBSOCKET_PROTOCOL: yup.string().oneOf(["ws", "wss"]),
+    NEXT_PUBLIC_API_WEBSOCKET_PROTOCOL: yup.string().oneOf([ 'ws', 'wss' ]),
 
     // 4. UI configuration
     //   a. homepage
@@ -798,10 +798,10 @@ const schema = yup
     NEXT_PUBLIC_WEB3_WALLETS: yup
       .mixed()
       .test(
-        "shape",
-        'Invalid schema were provided for NEXT_PUBLIC_WEB3_WALLETS, it should be either array or "none" string literal',
+        'shape',
+        'Invalid schema were provided for NEXT_PUBLIC_WEB3_WALLETS, it should be either array or \'none\' string literal',
         (data) => {
-          const isNoneSchema = yup.string().equals(["none"]);
+          const isNoneSchema = yup.string().equals([ 'none' ]);
           const isArrayOfWalletsSchema = yup
             .array()
             .transform(replaceQuotes)
@@ -812,7 +812,7 @@ const schema = yup
             isNoneSchema.isValidSync(data) ||
             isArrayOfWalletsSchema.isValidSync(data)
           );
-        }
+        },
       ),
     NEXT_PUBLIC_WEB3_DISABLE_ADD_TOKEN_TO_WALLET: yup.boolean(),
     NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER: yup.string().oneOf(TX_INTERPRETATION_PROVIDERS),
