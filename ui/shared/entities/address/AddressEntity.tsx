@@ -1,7 +1,6 @@
 import type { As } from '@chakra-ui/react';
 import { Box, Flex, Tooltip, chakra, VStack } from '@chakra-ui/react';
-import { useQueryClient } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import type { AddressParam } from 'types/api/addressParams';
 
@@ -16,7 +15,7 @@ import * as EntityBase from 'ui/shared/entities/base/components';
 import { distributeEntityProps, getIconProps } from '../base/utils';
 import AddressEntityContentProxy from './AddressEntityContentProxy';
 import AddressIdenticon from './AddressIdenticon';
-import { formattedLuksoName, getUniversalProfile, IdenticonUniversalProfile } from './IdenticonUniversalProfileQuery';
+import { formattedLuksoName, useUniversalProfile, IdenticonUniversalProfile } from './IdenticonUniversalProfileQuery';
 if (process.browser) {
   import('@lukso/web-components/dist/components/lukso-profile');
 }
@@ -110,7 +109,7 @@ const Content = chakra((props: ContentProps) => {
     return <AddressEntityContentProxy { ...props }/>;
   }
 
-  if (nameText) {
+  if (props.address.name) {
     const label = (
       <VStack gap={ 0 } py={ 1 } color="inherit">
         <Box fontWeight={ 600 } whiteSpace="pre-wrap" wordBreak="break-word">{ nameText }</Box>
@@ -128,24 +127,8 @@ const Content = chakra((props: ContentProps) => {
       </Tooltip>
     );
   }
-
-  const queryClient = useQueryClient();
-  const [ upName, setUpName ] = useState('');
-
-  useEffect(() => { // this causes a sort of loading state where the address suddenly switches to up name - needs fix?
-    (async() => {
-      if (!props.address.is_contract) {
-        return;
-      }
-      const upData = await getUniversalProfile(props.address.hash, queryClient);
-      if (upData === undefined) {
-        return;
-      }
-      if (upData.LSP3Profile !== undefined) {
-        setUpName(upData.LSP3Profile.name);
-      }
-    })();
-  }, [ props, queryClient ]);
+  const { data: upData, isLoading: upIsLoading } = useUniversalProfile(props.address.hash);
+  const upName = upIsLoading ? '' : upData?.LSP3Profile?.name ?? '';
 
   const displayedName = upName !== '' ? formattedLuksoName(props.address.hash, upName) : props.address.hash;
   return (
