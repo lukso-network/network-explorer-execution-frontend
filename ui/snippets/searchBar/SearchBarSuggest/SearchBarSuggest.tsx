@@ -6,7 +6,6 @@ import { scroller, Element } from 'react-scroll';
 
 import type { SearchResultItem } from 'types/api/search';
 
-import type { ResourceError } from 'lib/api/resources';
 import { useSettingsContext } from 'lib/contexts/settings';
 import useIsMobile from 'lib/hooks/useIsMobile';
 import * as regexp from 'lib/regexp';
@@ -21,7 +20,7 @@ import SearchBarSuggestBlockCountdown from './SearchBarSuggestBlockCountdown';
 import SearchBarSuggestItem from './SearchBarSuggestItem';
 
 interface Props {
-  query: UseQueryResult<Array<SearchResultItem>, ResourceError<unknown>>;
+  query: UseQueryResult<Array<SearchResultItem>, Error>;
   searchTerm: string;
   onItemClick: (event: React.MouseEvent<HTMLAnchorElement>) => void;
   containerId: string;
