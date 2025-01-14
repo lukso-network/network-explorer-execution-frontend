@@ -19,22 +19,6 @@ export interface SearchResultToken {
   certified?: boolean;
 }
 
-export interface SearchResultAddressOrContract {
-  type: 'address' | 'contract';
-  name: string | null;
-  address: string;
-  is_smart_contract_verified: boolean;
-  certified?: true;
-  filecoin_robust_address?: string | null;
-  url?: string; // not used by the frontend, we build the url ourselves
-  ens_info?: {
-    address_hash: string;
-    expiry_date?: string;
-    name: string;
-    names_count: number;
-  };
-}
-
 export interface SearchResultDomain {
   type: 'ens_domain';
   name: string | null;
@@ -106,12 +90,11 @@ export interface SearchResultUserOp {
 
 export type SearchResultItem =
     SearchResultToken |
-    SearchResultAddressOrContract |
     SearchResultAddressOrContractOrUniversalProfile |
     SearchResultBlock |
     SearchResultTx |
     SearchResultLabel |
-    SearchResultBlob | 
+    SearchResultBlob |
     SearchResultDomain;
 
 export interface SearchResult {

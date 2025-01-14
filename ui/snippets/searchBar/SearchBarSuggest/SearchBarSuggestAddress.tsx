@@ -61,7 +61,10 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: 
         whiteSpace="nowrap"
         textOverflow="ellipsis"
       >
-        <chakra.span fontWeight={ 500 } dangerouslySetInnerHTML={{ __html: highlightText(addressName, searchTerm) }}/>
+        <chakra.span
+          fontWeight={ 500 }
+          dangerouslySetInnerHTML={{ __html: highlightText(data.type === 'universal_profile' ? data.address : addressName, searchTerm) }}
+        />
         { data.ens_info && (
           data.ens_info.names_count > 1 ?
             <span> ({ data.ens_info.names_count > 39 ? '40+' : `+${ data.ens_info.names_count - 1 }` })</span> :

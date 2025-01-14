@@ -23,7 +23,7 @@ export const searchCategories: Array<{ id: Category; title: string }> = [
   { id: 'public_tag', title: 'Public tags' },
   { id: 'transaction', title: 'Transactions' },
   { id: 'block', title: 'Blocks' },
-  { id: 'universal_profile', title: 'LUKSO Universal Profiles' },
+  { id: 'universal_profile', title: 'Universal Profiles' },
 ];
 
 if (config.features.userOps.isEnabled) {
