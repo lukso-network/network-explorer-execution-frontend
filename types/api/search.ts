@@ -95,7 +95,8 @@ export type SearchResultItem =
     SearchResultTx |
     SearchResultLabel |
     SearchResultBlob |
-    SearchResultDomain;
+    SearchResultDomain |
+    SearchResultUserOp;
 
 export interface SearchResult {
   items: Array<SearchResultItem>;
