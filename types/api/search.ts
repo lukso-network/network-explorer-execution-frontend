@@ -1,7 +1,23 @@
 import type * as bens from '@blockscout/bens-types';
 import type { TokenType } from 'types/api/token';
 
-export type SearchResultType = 'token' | 'address' | 'block' | 'transaction' | 'contract';
+import type { AddressMetadataTagApi } from './addressMetadata';
+
+export const SEARCH_RESULT_TYPES = {
+  token: 'token',
+  address: 'address',
+  universal_profile: 'universal_profile',
+  block: 'block',
+  transaction: 'transaction',
+  contract: 'contract',
+  ens_domain: 'ens_domain',
+  label: 'label',
+  user_operation: 'user_operation',
+  blob: 'blob',
+  metadata_tag: 'metadata_tag',
+} as const;
+
+export type SearchResultType = typeof SEARCH_RESULT_TYPES[keyof typeof SEARCH_RESULT_TYPES];
 
 export interface SearchResultToken {
   type: 'token';
@@ -20,13 +36,35 @@ export interface SearchResultToken {
   certified?: boolean;
 }
 
-export interface SearchResultDomain {
-  type: 'ens_domain';
+type SearchResultEnsInfo = {
+  address_hash: string;
+  expiry_date?: string;
+  name: string;
+  names_count: number;
+} | null;
+
+interface SearchResultAddressData {
   name: string | null;
   address: string;
-  filecoin_robust_address?: string | null;
   is_smart_contract_verified: boolean;
+  certified?: true;
+  filecoin_robust_address?: string | null;
   url?: string; // not used by the frontend, we build the url ourselves
+}
+
+export interface SearchResultAddressOrContract extends SearchResultAddressData {
+  type: 'address' | 'contract';
+  ens_info?: SearchResultEnsInfo;
+}
+
+export interface SearchResultMetadataTag extends SearchResultAddressData {
+  type: 'metadata_tag';
+  ens_info?: SearchResultEnsInfo;
+  metadata: AddressMetadataTagApi;
+}
+
+export interface SearchResultDomain extends SearchResultAddressData {
+  type: 'ens_domain';
   ens_info: {
     address_hash: string;
     expiry_date?: string;
@@ -91,14 +129,15 @@ export interface SearchResultUserOp {
 }
 
 export type SearchResultItem =
-    SearchResultToken |
-    SearchResultAddressOrContractOrUniversalProfile |
-    SearchResultBlock |
-    SearchResultTx |
-    SearchResultLabel |
-    SearchResultBlob |
-    SearchResultDomain |
-    SearchResultUserOp;
+  SearchResultToken |
+  SearchResultAddressOrContractOrUniversalProfile |
+  SearchResultBlock |
+  SearchResultTx |
+  SearchResultLabel |
+  SearchResultUserOp |
+  SearchResultBlob |
+  SearchResultDomain |
+  SearchResultMetadataTag;
 
 export interface SearchResult {
   items: Array<SearchResultItem>;

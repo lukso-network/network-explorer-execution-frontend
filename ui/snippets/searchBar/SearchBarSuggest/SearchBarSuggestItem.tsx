@@ -1,11 +1,12 @@
 import type { LinkProps as NextLinkProps } from 'next/link';
-import NextLink from 'next/link';
 import React from 'react';
 
 import type { SearchResultItem } from 'types/client/search';
 import type { AddressFormat } from 'types/views/address';
 
 import { route } from 'nextjs-routes';
+
+import NextLink from 'ui/shared/NextLink';
 
 import SearchBarSuggestAddress from './SearchBarSuggestAddress';
 import SearchBarSuggestBlob from './SearchBarSuggestBlob';
@@ -35,7 +36,8 @@ const SearchBarSuggestItem = ({ data, isMobile, searchTerm, onClick, addressForm
       case 'contract':
       case 'address':
       case 'universal_profile':
-      case 'label': {
+      case 'label':
+      case 'metadata_tag': {
         return route({ pathname: '/address/[hash]', query: { hash: data.address } });
       }
       case 'transaction': {
@@ -73,6 +75,7 @@ const SearchBarSuggestItem = ({ data, isMobile, searchTerm, onClick, addressForm
           />
         );
       }
+      case 'metadata_tag':
       case 'contract':
       case 'universal_profile':
       case 'address': {
