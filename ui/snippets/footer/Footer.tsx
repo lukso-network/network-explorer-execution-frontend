@@ -23,7 +23,7 @@ import getApiVersionUrl from './utils/getApiVersionUrl';
 
 const MAX_LINKS_COLUMNS = 4;
 
-const FRONT_VERSION_URL = `https://github.com/blockscout/frontend/tree/${ config.UI.footer.frontendVersion }`;
+const FRONT_VERSION_URL = `https://github.com/lukso-network/network-explorer-execution-frontend`;
 const FRONT_COMMIT_URL = `https://github.com/blockscout/frontend/commit/${ config.UI.footer.frontendCommit }`;
 
 const Footer = () => {
@@ -47,19 +47,19 @@ const Footer = () => {
       icon: 'social/git' as const,
       iconSize: '18px',
       text: 'Contribute',
-      url: 'https://github.com/blockscout/blockscout',
+      url: 'https://github.com/lukso-network/',
     },
     {
       icon: 'social/twitter' as const,
       iconSize: '18px',
-      text: 'X (ex-Twitter)',
-      url: 'https://x.com/blockscout',
+      text: 'Twitter',
+      url: 'https://x.com/lukso_io/',
     },
     {
       icon: 'social/discord' as const,
       iconSize: '24px',
       text: 'Discord',
-      url: 'https://discord.gg/blockscout',
+      url: 'https://discord.gg/lukso',
     },
     {
       icon: 'brands/blockscout' as const,
@@ -130,6 +130,9 @@ const Footer = () => {
             />
           </Link>
         </Flex>
+        <Box mt={{ base: 5, lg: '44px' }}>
+          <Link fontSize="xs" href="https://lukso.network/">lukso.network</Link>
+        </Box>
         <Text mt={ 3 } fontSize="xs">
           Blockscout is a tool for inspecting and analyzing EVM based blockchains. Blockchain explorer for Ethereum Networks.
         </Text>

@@ -235,6 +235,10 @@ export const GENERAL_API_MISC_RESOURCES = {
   api_v2_key: {
     path: '/api/v2/key',
   },
+
+  universal_profile: {
+    path: '',
+  },
 } satisfies Record<string, ApiResource>;
 
 export type GeneralApiMiscResourceName = `general:${ keyof typeof GENERAL_API_MISC_RESOURCES }`;
@@ -257,6 +261,7 @@ R extends 'general:homepage_zkevm_latest_batch' ? number :
 R extends 'general:homepage_zksync_latest_batch' ? number :
 R extends 'general:homepage_arbitrum_latest_batch' ? number :
 R extends 'general:quick_search' ? Array<SearchResultItem> :
+R extends 'general:universal_profile' ? Array<SearchResultItem> :
 R extends 'general:search' ? SearchResult :
 R extends 'general:search_check_redirect' ? SearchRedirectResult :
 R extends 'general:config_backend_version' ? BackendVersionConfig :

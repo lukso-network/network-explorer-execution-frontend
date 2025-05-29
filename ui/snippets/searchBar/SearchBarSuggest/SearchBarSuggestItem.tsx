@@ -32,6 +32,7 @@ const SearchBarSuggestItem = ({ data, isMobile, searchTerm, onClick, addressForm
       }
       case 'contract':
       case 'address':
+      case 'universal_profile':
       case 'label':
       case 'metadata_tag': {
         return route({ pathname: '/address/[hash]', query: { hash: data.address_hash } });
@@ -73,6 +74,7 @@ const SearchBarSuggestItem = ({ data, isMobile, searchTerm, onClick, addressForm
       }
       case 'metadata_tag':
       case 'contract':
+      case 'universal_profile':
       case 'address': {
         return (
           <SearchBarSuggestAddress

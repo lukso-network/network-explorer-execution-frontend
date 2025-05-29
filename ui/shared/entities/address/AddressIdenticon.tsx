@@ -21,6 +21,21 @@ const Icon = dynamic(
         return (props: IconProps) => <IdenticonGithub iconSize={ props.size } seed={ props.hash }/>;
       }
 
+      case 'universal_profile': {
+        // fallback to blockie
+        const makeBlockie = (await import('ethereum-blockies-base64')).default;
+
+        return (props: IconProps) => {
+          const data = makeBlockie(props.hash);
+          return (
+            <Image
+              src={ data }
+              alt={ `Identicon for ${ props.hash }}` }
+            />
+          );
+        };
+      }
+
       case 'blockie': {
         const { blo } = (await import('blo'));
 

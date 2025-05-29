@@ -6,6 +6,7 @@ import type { AddressMetadataTagApi } from './addressMetadata';
 export const SEARCH_RESULT_TYPES = {
   token: 'token',
   address: 'address',
+  universal_profile: 'universal_profile',
   block: 'block',
   transaction: 'transaction',
   contract: 'contract',
@@ -73,6 +74,11 @@ export interface SearchResultDomain extends SearchResultAddressData {
   };
 }
 
+export interface SearchResultAddressOrContractOrUniversalProfile extends SearchResultAddressData {
+  type: 'address' | 'contract' | 'universal_profile';
+  ens_info?: SearchResultEnsInfo;
+}
+
 export interface SearchResultLabel {
   type: 'label';
   address_hash: string;
@@ -113,7 +119,7 @@ export interface SearchResultUserOp {
 
 export type SearchResultItem =
   SearchResultToken |
-  SearchResultAddressOrContract |
+  SearchResultAddressOrContractOrUniversalProfile |
   SearchResultBlock |
   SearchResultTx |
   SearchResultLabel |

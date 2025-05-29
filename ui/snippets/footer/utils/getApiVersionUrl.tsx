@@ -3,11 +3,5 @@ export default function getApiVersionUrl(version: string | undefined): string | 
     return;
   }
 
-  const [ tag, commit ] = version.split('.+commit.');
-
-  if (commit) {
-    return `https://github.com/blockscout/blockscout/commit/${ commit }`;
-  }
-
-  return `https://github.com/blockscout/blockscout/tree/${ tag }`;
+  return `https://github.com/lukso-network/network-explorer-execution/tree/lukso`;
 }

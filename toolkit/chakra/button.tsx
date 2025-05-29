@@ -68,8 +68,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   },
 );
 
+// @ts-ignore
 export interface ButtonGroupProps extends ChakraButtonGroupProps {}
 
+// @ts-ignore
 export const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
   function ButtonGroup(props, ref) {
     const { ...rest } = props;

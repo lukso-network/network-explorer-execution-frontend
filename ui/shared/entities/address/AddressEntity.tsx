@@ -16,6 +16,10 @@ import { distributeEntityProps, getContentProps, getIconProps } from '../base/ut
 import AddressEntityContentProxy from './AddressEntityContentProxy';
 import AddressIconDelegated from './AddressIconDelegated';
 import AddressIdenticon from './AddressIdenticon';
+import { formattedLuksoName, useUniversalProfile, IdenticonUniversalProfile } from './IdenticonUniversalProfileQuery';
+if (process.browser) {
+  import('@lukso/web-components/dist/components/lukso-profile');
+}
 
 type LinkProps = EntityBase.LinkBaseProps & Pick<EntityProps, 'address'>;
 
@@ -71,7 +75,7 @@ const Icon = (props: IconProps) => {
     const contractIconName: EntityBase.IconBaseProps['name'] = props.address.is_verified ? 'contracts/verified' : 'contracts/regular';
     const label = (isVerified ? 'verified ' : '') + (isProxy ? 'proxy contract' : 'contract');
 
-    return (
+    const contractIcon = (
       <Tooltip content={ label.slice(0, 1).toUpperCase() + label.slice(1) } interactive={ props.tooltipInteractive }>
         <span>
           <EntityBase.Icon
@@ -83,6 +87,8 @@ const Icon = (props: IconProps) => {
         </span>
       </Tooltip>
     );
+
+    return <IdenticonUniversalProfile address={ props.address.hash } fallbackIcon={ contractIcon }/>;
   }
 
   const label = (() => {
@@ -142,11 +148,14 @@ const Content = chakra((props: ContentProps) => {
       </Tooltip>
     );
   }
+  const { data: upData, isLoading: upIsLoading } = useUniversalProfile(props.address.hash);
+  const upName = upIsLoading ? '' : upData?.name ?? '';
 
+  const displayedName = upName !== '' ? formattedLuksoName(props.address.hash, upName) : props.address.hash;
   return (
     <EntityBase.Content
       { ...props }
-      text={ displayedAddress }
+      text={ displayedName }
     />
   );
 });

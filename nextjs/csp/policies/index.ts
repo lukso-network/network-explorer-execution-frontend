@@ -14,3 +14,4 @@ export { rollbar } from './rollbar';
 export { safe } from './safe';
 export { usernameApi } from './usernameApi';
 export { walletConnect } from './walletConnect';
+export { universalProfile } from './universalprofile';

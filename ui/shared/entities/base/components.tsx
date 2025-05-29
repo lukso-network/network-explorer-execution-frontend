@@ -166,6 +166,8 @@ const Content = chakra(({
         );
       case 'dynamic':
         return (
+
+        // @ts-ignore
           <HashStringShortenDynamic
             hash={ text }
             as={ asProp }

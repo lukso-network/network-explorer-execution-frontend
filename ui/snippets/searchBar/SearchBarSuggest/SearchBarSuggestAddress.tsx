@@ -2,7 +2,7 @@ import { chakra, Box, Text, Flex, Grid } from '@chakra-ui/react';
 import React from 'react';
 
 import type { ItemsProps } from './types';
-import type { SearchResultAddressOrContract, SearchResultMetadataTag } from 'types/api/search';
+import type { SearchResultAddressOrContractOrUniversalProfile, SearchResultMetadataTag } from 'types/api/search';
 
 import { toBech32Address } from 'lib/address/bech32';
 import dayjs from 'lib/date/dayjs';
@@ -13,7 +13,9 @@ import ContractCertifiedLabel from 'ui/shared/ContractCertifiedLabel';
 import * as AddressEntity from 'ui/shared/entities/address/AddressEntity';
 import HashStringShortenDynamic from 'ui/shared/HashStringShortenDynamic';
 
-type Props = ItemsProps<SearchResultAddressOrContract | SearchResultMetadataTag>;
+import { formattedLuksoName } from '../../../shared/entities/address/IdenticonUniversalProfileQuery';
+
+type Props = ItemsProps<SearchResultAddressOrContractOrUniversalProfile | SearchResultMetadataTag>;
 
 const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: Props) => {
   const shouldHighlightHash = ADDRESS_REGEXP.test(searchTerm);
@@ -23,7 +25,7 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: 
     <AddressEntity.Icon
       address={{
         hash: data.address_hash,
-        is_contract: data.type === 'contract',
+        is_contract: data.type === 'contract' || data.type === 'universal_profile',
         name: '',
         is_verified: data.is_smart_contract_verified,
         ens_domain_name: null,
@@ -42,7 +44,10 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: 
         whiteSpace="nowrap"
         textOverflow="ellipsis"
       >
-        <chakra.span fontWeight={ 500 } dangerouslySetInnerHTML={{ __html: highlightText(addressName, searchTerm) }}/>
+        <chakra.span
+          fontWeight={ 500 }
+          dangerouslySetInnerHTML={{ __html: highlightText(data.type === 'universal_profile' ? data.address_hash : addressName, searchTerm) }}
+        />
         { data.ens_info && (
           data.ens_info.names_count > 1 ?
             <span> ({ data.ens_info.names_count > 39 ? '40+' : `+${ data.ens_info.names_count - 1 }` })</span> :
@@ -52,10 +57,13 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm, addressFormat }: 
       { data.certified && <ContractCertifiedLabel boxSize={ 4 } iconSize={ 4 } ml={ 1 } flexShrink={ 0 }/> }
     </Flex>
   );
+
   const tagEl = data.type === 'metadata_tag' ? (
     <SearchResultEntityTag metadata={ data.metadata } searchTerm={ searchTerm } ml={{ base: 0, lg: 'auto' }}/>
   ) : null;
-  const addressEl = <HashStringShortenDynamic hash={ hash } noTooltip/>;
+
+  const dynamicTitle = data.type === 'universal_profile' ? formattedLuksoName(hash, data.name) : hash;
+  const addressEl = <HashStringShortenDynamic hash={ dynamicTitle } noTooltip/>;
 
   if (isMobile) {
     return (
