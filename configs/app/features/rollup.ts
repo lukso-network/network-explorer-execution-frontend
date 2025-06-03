@@ -2,7 +2,7 @@ import type { Feature } from './types';
 import type { ParentChain, RollupType } from 'types/client/rollup';
 import { ROLLUP_TYPES } from 'types/client/rollup';
 
-import stripTrailingSlash from 'lib/stripTrailingSlash';
+import { stripTrailingSlash } from 'toolkit/utils/url';
 
 import { getEnvValue, parseEnvJson } from '../utils';
 
@@ -35,11 +35,13 @@ const config: Feature<{
   type: RollupType;
   homepage: { showLatestBlocks: boolean };
   outputRootsEnabled: boolean;
+  interopEnabled: boolean;
   L2WithdrawalUrl: string | undefined;
   parentChain: ParentChain;
   DA: {
     celestia: {
       namespace: string | undefined;
+      celeniumUrl: string | undefined;
     };
   };
 }> = (() => {
@@ -50,6 +52,7 @@ const config: Feature<{
       type,
       L2WithdrawalUrl: type === 'optimistic' ? L2WithdrawalUrl : undefined,
       outputRootsEnabled: type === 'optimistic' && getEnvValue('NEXT_PUBLIC_ROLLUP_OUTPUT_ROOTS_ENABLED') === 'true',
+      interopEnabled: type === 'optimistic' && getEnvValue('NEXT_PUBLIC_INTEROP_ENABLED') === 'true',
       homepage: {
         showLatestBlocks: getEnvValue('NEXT_PUBLIC_ROLLUP_HOMEPAGE_SHOW_LATEST_BLOCKS') === 'true',
       },
@@ -57,6 +60,7 @@ const config: Feature<{
       DA: {
         celestia: {
           namespace: type === 'arbitrum' ? getEnvValue('NEXT_PUBLIC_ROLLUP_DA_CELESTIA_NAMESPACE') : undefined,
+          celeniumUrl: getEnvValue('NEXT_PUBLIC_ROLLUP_DA_CELESTIA_CELENIUM_URL'),
         },
       },
     });

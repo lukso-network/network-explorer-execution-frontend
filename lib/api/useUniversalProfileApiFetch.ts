@@ -35,7 +35,7 @@ export default function useUniversalProfileApiFetch() {
         return {
           type: 'universal_profile',
           name: hitAsUp.name != null && hitAsUp.name !== '' ? hitAsUp.name.trim() : null,
-          address: getCheckedSummedAddress(hit.id),
+          address_hash: getCheckedSummedAddress(hit.id),
           is_smart_contract_verified: false,
         };
       });

@@ -23,7 +23,7 @@ export interface SearchResultToken {
   type: 'token';
   name: string;
   symbol: string;
-  address: string;
+  address_hash: string;
   token_url: string;
   address_url: string;
   icon_url: string | null;
@@ -45,7 +45,7 @@ type SearchResultEnsInfo = {
 
 interface SearchResultAddressData {
   name: string | null;
-  address: string;
+  address_hash: string;
   is_smart_contract_verified: boolean;
   certified?: true;
   filecoin_robust_address?: string | null;
@@ -74,25 +74,14 @@ export interface SearchResultDomain extends SearchResultAddressData {
   };
 }
 
-export interface SearchResultAddressOrContractOrUniversalProfile {
+export interface SearchResultAddressOrContractOrUniversalProfile extends SearchResultAddressData {
   type: 'address' | 'contract' | 'universal_profile';
-  name: string | null;
-  address: string;
-  is_smart_contract_verified: boolean;
-  certified?: true;
-  filecoin_robust_address?: string | null;
-  url?: string; // not used by the frontend, we build the url ourselves
-  ens_info?: {
-    address_hash: string;
-    expiry_date?: string;
-    name: string;
-    names_count: number;
-  };
+  ens_info?: SearchResultEnsInfo;
 }
 
 export interface SearchResultLabel {
   type: 'label';
-  address: string;
+  address_hash: string;
   filecoin_robust_address?: string | null;
   name: string;
   is_smart_contract_verified: boolean;
@@ -144,7 +133,7 @@ export interface SearchResult {
   next_page_params: {
     address_hash: string | null;
     block_hash: string | null;
-    holder_count: number | null;
+    holders_count: number | null;
     inserted_at: string | null;
     item_type: SearchResultType;
     items_count: number;

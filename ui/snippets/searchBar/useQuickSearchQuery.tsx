@@ -14,19 +14,19 @@ export default function useQuickSearchQuery() {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  const quickSearchQuery = useApiQuery('quick_search', {
+  const quickSearchQuery = useApiQuery('general:quick_search', {
     queryParams: { q: isBech32Address(debouncedSearchTerm) ? fromBech32Address(debouncedSearchTerm) : debouncedSearchTerm },
     queryOptions: { enabled: debouncedSearchTerm.trim().length > 0 },
   });
 
-  const redirectCheckQuery = useApiQuery('search_check_redirect', {
+  const redirectCheckQuery = useApiQuery('general:search_check_redirect', {
     // on pages with regular search bar we check redirect on every search term change
     // in order to prepend its result to suggest list since this resource is much faster than regular search
     queryParams: { q: debouncedSearchTerm },
     queryOptions: { enabled: Boolean(debouncedSearchTerm) },
   });
 
-  const upQuery = useUniversalProfileQuery('universal_profile', {
+  const upQuery = useUniversalProfileQuery('general:universal_profile', {
     queryParams: { q: debouncedSearchTerm },
     queryOptions: { enabled: debouncedSearchTerm.trim().length > 0 },
   });

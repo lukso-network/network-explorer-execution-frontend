@@ -7,7 +7,7 @@ import React from 'react';
 import { graphClient } from 'lib/api/graphClient';
 import type { SearchProfileQueryResponse } from 'lib/api/graphTypes';
 import { isUniversalProfileEnabled } from 'lib/api/isUniversalProfileEnabled';
-import Skeleton from 'ui/shared/chakra/Skeleton';
+import { Skeleton } from 'toolkit/chakra/skeleton';
 
 interface Props {
   address: string;
@@ -74,7 +74,7 @@ export const IdenticonUniversalProfile: React.FC<Props> = ({
   }
 
   return (
-    <Skeleton pr={ profileImageUrl ? 1.5 : 0 } isLoaded={ !isLoading }>
+    <Skeleton pr={ profileImageUrl ? 1.5 : 0 } loading={ isLoading }>
       { profileImageUrl ? (
         <Box style={{ transform: 'scale(0.8)', zIndex: 1000 }} zIndex={ 1000 } ml={ -0.5 }>
           <lukso-profile
