@@ -4,6 +4,7 @@ import type { AbiParameter } from 'viem';
 
 import { route } from 'nextjs-routes';
 
+import config from 'configs/app';
 import { Link } from 'toolkit/chakra/link';
 import { Tooltip } from 'toolkit/chakra/tooltip';
 import { WEI } from 'toolkit/utils/consts';
@@ -54,7 +55,7 @@ const ItemPrimitive = ({ abiParameter, data, level, hideLabel }: Props) => {
     if (intMatch && typeof data === 'bigint' && intMatch.max > INT_TOOLTIP_THRESHOLD && data > INT_TOOLTIP_THRESHOLD) {
       const dividedValue = BigNumber(data.toString()).div(WEI);
       return (
-        <Tooltip content={ dividedValue.toLocaleString() + ' ETH' }>
+        <Tooltip content={ dividedValue.toLocaleString() + ' ' + config.chain.currency.symbol }>
           <span>{ castValueToString(data) }</span>
         </Tooltip>
       );
