@@ -1,8 +1,8 @@
 import type { TokenInfoApplication } from './account';
 import type { AddressParam } from './addressParams';
 
-export type NFTTokenType = 'ERC-721' | 'ERC-1155' | 'ERC-404';
-export type TokenType = 'ERC-20' | NFTTokenType;
+export type NFTTokenType = 'ERC-721' | 'ERC-1155' | 'ERC-404' | 'LSP8';
+export type TokenType = 'ERC-20' | 'LSP7' | NFTTokenType;
 
 export interface TokenInfo<T extends TokenType = TokenType> {
   address_hash: string;
