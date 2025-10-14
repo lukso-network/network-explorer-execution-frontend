@@ -85,6 +85,7 @@ export function app(): CspDev.DirectiveDescriptor {
     'img-src': [
       KEY_WORDS.SELF,
       KEY_WORDS.DATA,
+      KEY_WORDS.BLOB,
       ...MAIN_DOMAINS,
 
       // we agreed that using wildcard for images is mostly safe
