@@ -72,11 +72,17 @@ const HashStringShortenDynamic = ({ hash, fontWeight = '400', noTooltip, tailLen
       // if we get #, this means that we got a valid universal profile in format of @name#0x1234 - we can split this data and return username component.
       if (isUniversalProfileEnabled() && hash.includes(' (')) {
         const upParts = hash.split(' (');
-        const hashHead = '#' + upParts[1].slice(2, 6); // change (0x1234...5678) -> #1234
+        const hashTail = '#' + upParts[1].slice(2, 6); // change (0x1234...5678) -> #1234
         const name = upParts[0];
-        const slicedName = name.slice(0, rightI - 3);
-        const displayed = rightI - 3 > name.length ? name + hashHead : slicedName + '...' + hashHead;
-        setDisplayedString(displayed);
+        shadowEl.textContent = hash;
+        let i = rightI;
+        while (getWidth(shadowEl) > parentWidth || i === 1) {
+          const slicedName = name.slice(0, i);
+          const res = i > name.length ? name + hashTail : slicedName + '...' + hashTail;
+          shadowEl.textContent = res;
+          i--;
+        }
+        setDisplayedString(shadowEl.textContent);
       } else {
         setDisplayedString(hash.slice(0, rightI - 1) + '...' + tail);
       }
