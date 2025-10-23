@@ -10,5 +10,8 @@ export function universalProfile(): CspDev.DirectiveDescriptor {
       'envio.lukso-mainnet.universal.tech',
       'envio.lukso-testnet.universal.tech',
     ],
+    'frame-ancestors': [
+      'universaleverything.io',
+    ],
   };
 }
