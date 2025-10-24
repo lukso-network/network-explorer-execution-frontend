@@ -42,6 +42,16 @@ export default function useFetchTokens({ hash, enabled }: Props) {
     queryParams: { type: 'ERC-404' },
     queryOptions: { enabled: Boolean(hash) && enabled, refetchOnMount: false },
   });
+  const lsp7query = useApiQuery('general:address_tokens', {
+    pathParams: { hash },
+    queryParams: { type: 'LSP7' },
+    queryOptions: { enabled: Boolean(hash) && enabled, refetchOnMount: false },
+  });
+  const lsp8query = useApiQuery('general:address_tokens', {
+    pathParams: { hash },
+    queryParams: { type: 'LSP8' },
+    queryOptions: { enabled: Boolean(hash) && enabled, refetchOnMount: false },
+  });
 
   const queryClient = useQueryClient();
 
@@ -88,9 +98,23 @@ export default function useFetchTokens({ hash, enabled }: Props) {
     updateTokensData('ERC-404', payload);
   }, [ updateTokensData ]);
 
+  const handleTokenBalancesLsp7Message: SocketMessage.AddressTokenBalancesLSP7['handler'] = React.useCallback((payload) => {
+    updateTokensData('LSP7', payload);
+  }, [ updateTokensData ]);
+
+  const handleTokenBalancesLsp8Message: SocketMessage.AddressTokenBalancesLSP8['handler'] = React.useCallback((payload) => {
+    updateTokensData('LSP8', payload);
+  }, [ updateTokensData ]);
+
   const channel = useSocketChannel({
     topic: `addresses:${ hash?.toLowerCase() }`,
-    isDisabled: Boolean(hash) && (erc20query.isPlaceholderData || erc721query.isPlaceholderData || erc1155query.isPlaceholderData),
+    isDisabled: Boolean(hash) && (
+      erc20query.isPlaceholderData ||
+        erc721query.isPlaceholderData ||
+        erc1155query.isPlaceholderData ||
+        lsp7query.isPlaceholderData ||
+        lsp8query.isPlaceholderData
+    ),
   });
 
   useSocketMessage({
@@ -113,6 +137,16 @@ export default function useFetchTokens({ hash, enabled }: Props) {
     event: 'updated_token_balances_erc_404',
     handler: handleTokenBalancesErc404Message,
   });
+  useSocketMessage({
+    channel,
+    event: 'updated_token_balances_lsp7',
+    handler: handleTokenBalancesLsp7Message,
+  });
+  useSocketMessage({
+    channel,
+    event: 'updated_token_balances_lsp8',
+    handler: handleTokenBalancesLsp8Message,
+  });
 
   const data = React.useMemo(() => {
     return {
@@ -132,12 +166,30 @@ export default function useFetchTokens({ hash, enabled }: Props) {
         items: erc404query.data?.items.map(calculateUsdValue) || [],
         isOverflow: Boolean(erc1155query.data?.next_page_params),
       },
+      LSP7: {
+        items: lsp7query.data?.items.map(calculateUsdValue) || [],
+        isOverflow: Boolean(lsp7query.data?.next_page_params),
+      },
+      LSP8: {
+        items: lsp8query.data?.items.map(calculateUsdValue) || [],
+        isOverflow: Boolean(lsp8query.data?.next_page_params),
+      },
     };
-  }, [ erc1155query.data, erc20query.data, erc721query.data, erc404query.data ]);
+  }, [ erc1155query.data, erc20query.data, erc721query.data, erc404query.data, lsp7query.data, lsp8query.data ]);
 
   return {
-    isPending: erc20query.isPending || erc721query.isPending || erc1155query.isPending || erc404query.isPending,
-    isError: erc20query.isError || erc721query.isError || erc1155query.isError || erc404query.isError,
+    isPending: erc20query.isPending ||
+      erc721query.isPending ||
+      erc1155query.isPending ||
+      erc404query.isPending ||
+      lsp7query.isPending ||
+      lsp8query.isPending,
+    isError: erc20query.isError ||
+      erc721query.isError ||
+      erc1155query.isError ||
+      erc404query.isError ||
+      lsp7query.isError ||
+      lsp8query.isError,
     data,
   };
 }

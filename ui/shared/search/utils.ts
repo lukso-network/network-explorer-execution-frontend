@@ -3,7 +3,8 @@ import type { SearchResultItem } from 'types/client/search';
 
 import config from 'configs/app';
 
-export type ApiCategory = 'token' | 'nft' | 'address' | 'public_tag' | 'transaction' | 'block' | 'user_operation' | 'blob' | 'domain' | 'universal_profile';
+export type ApiCategory = 'token' | 'nft' | 'address' | 'public_tag' | 'transaction' | 'block' | 'user_operation' | 'blob' | 'domain' | 'universal_profile' |
+  'lsp7' | 'lsp8' ;
 export type Category = ApiCategory | 'app';
 
 export type ItemsCategoriesMap =
@@ -24,6 +25,8 @@ export const searchCategories: Array<{ id: Category; title: string }> = [
   { id: 'transaction', title: 'Transactions' },
   { id: 'block', title: 'Blocks' },
   { id: 'universal_profile', title: 'Universal Profiles' },
+  { id: 'lsp7', title: 'Tokens (LSP7)' },
+  { id: 'lsp8', title: 'Tokens (LSP8)' },
 ];
 
 if (config.features.userOps.isEnabled) {
@@ -50,6 +53,8 @@ export const searchItemTitles: Record<Category, { itemTitle: string; itemTitleSh
   user_operation: { itemTitle: 'User operation', itemTitleShort: 'User op' },
   blob: { itemTitle: 'Blob', itemTitleShort: 'Blob' },
   universal_profile: { itemTitle: 'Universal Profile', itemTitleShort: 'UP' },
+  lsp7: { itemTitle: 'LSP7', itemTitleShort: 'LSP7' },
+  lsp8: { itemTitle: 'LSP8', itemTitleShort: 'LSP8' },
 };
 
 export function getItemCategory(item: SearchResultItem | SearchResultAppItem): Category | undefined {
@@ -62,6 +67,12 @@ export function getItemCategory(item: SearchResultItem | SearchResultAppItem): C
     case 'token': {
       if (item.token_type === 'ERC-20') {
         return 'token';
+      }
+      if (item.token_type === 'LSP7') {
+        return 'lsp7';
+      }
+      if (item.token_type === 'LSP8') {
+        return 'lsp8';
       }
       return 'nft';
     }

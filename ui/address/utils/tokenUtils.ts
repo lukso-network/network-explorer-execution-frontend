@@ -21,10 +21,21 @@ export interface TokenSelectDataItem {
 
 type TokenGroup = [string, TokenSelectDataItem];
 
-const TOKEN_GROUPS_ORDER: Array<TokenType> = [ 'ERC-20', 'ERC-721', 'ERC-1155', 'ERC-404' ];
+const TOKEN_GROUPS_ORDER: Array<TokenType> = [ 'LSP7', 'LSP8', 'ERC-20', 'ERC-721', 'ERC-1155', 'ERC-404' ];
 
 export const sortTokenGroups = (groupA: TokenGroup, groupB: TokenGroup) => {
   return TOKEN_GROUPS_ORDER.indexOf(groupA[0] as TokenType) > TOKEN_GROUPS_ORDER.indexOf(groupB[0] as TokenType) ? 1 : -1;
+};
+
+const sortLsp7or8Tokens = (sort: Sort) => (dataA: AddressTokenBalance, dataB: AddressTokenBalance) => {
+  if (dataA.value === dataB.value) {
+    return 0;
+  }
+  if (sort === 'desc') {
+    return Number(dataA.value) > Number(dataB.value) ? -1 : 1;
+  }
+
+  return Number(dataA.value) > Number(dataB.value) ? 1 : -1;
 };
 
 const sortErc1155or404Tokens = (sort: Sort) => (dataA: AddressTokenBalance, dataB: AddressTokenBalance) => {
@@ -65,6 +76,8 @@ export const sortingFns = {
   'ERC-721': sortErc721Tokens,
   'ERC-1155': sortErc1155or404Tokens,
   'ERC-404': sortErc1155or404Tokens,
+  LSP7: sortLsp7or8Tokens,
+  LSP8: sortLsp7or8Tokens,
 };
 
 export const filterTokens = (searchTerm: string) => ({ token }: AddressTokenBalance) => {

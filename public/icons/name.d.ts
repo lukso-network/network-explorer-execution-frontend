@@ -115,6 +115,8 @@
 	| "networks"
 	| "networks/icon-placeholder"
 	| "networks/logo-placeholder"
+	| "networks/lukso/icon-lukso"
+	| "networks/lukso/logo-lukso"
 	| "nft_shield"
 	| "open-link"
 	| "output_roots"
