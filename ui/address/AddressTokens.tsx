@@ -62,6 +62,29 @@ const AddressTokens = ({ shouldRender = true, isQueryEnabled = true }: Props) =>
   const tab = getQueryParamString(router.query.tab);
   const hash = getQueryParamString(router.query.hash);
 
+  const lsp7query = useQueryWithPages({
+    resourceName: 'general:address_tokens',
+    pathParams: { hash },
+    filters: { type: 'LSP7' },
+    scrollRef,
+    options: {
+      enabled: isQueryEnabled && (!tab || tab === 'tokens' || tab === 'tokens_erc20'),
+      refetchOnMount: false,
+      placeholderData: generateListStub<'general:address_tokens'>(ADDRESS_TOKEN_BALANCE_ERC_20, 10, { next_page_params: null }),
+    },
+  });
+
+  const lsp8query = useQueryWithPages({
+    resourceName: 'general:address_nfts',
+    pathParams: { hash },
+    scrollRef,
+    options: {
+      enabled: isQueryEnabled && tab === 'tokens_lsp8' && nftDisplayType === 'list',
+      placeholderData: generateListStub<'general:address_nfts'>(ADDRESS_NFT_1155, 10, { next_page_params: null }),
+    },
+    filters: { type: [ 'LSP8' ] },
+  });
+
   const erc20Query = useQueryWithPages({
     resourceName: 'general:address_tokens',
     pathParams: { hash },
@@ -79,7 +102,7 @@ const AddressTokens = ({ shouldRender = true, isQueryEnabled = true }: Props) =>
     pathParams: { hash },
     scrollRef,
     options: {
-      enabled: isQueryEnabled && tab === 'tokens_nfts' && nftDisplayType === 'collection',
+      enabled: isQueryEnabled && (tab === 'tokens_nfts' || tab === 'tokens_lsp8') && nftDisplayType === 'collection',
       placeholderData: generateListStub<'general:address_collections'>(ADDRESS_COLLECTION, 10, { next_page_params: null }),
     },
     filters: { type: tokenTypes },
@@ -120,6 +143,14 @@ const AddressTokens = ({ shouldRender = true, isQueryEnabled = true }: Props) =>
   const hasActiveFilters = Boolean(tokenTypes?.length);
 
   const tabs = [
+    { id: 'tokens_lsp7', title: `LSP7`, component: <ERC20Tokens tokensQuery={ lsp7query }/> },
+    {
+      id: 'tokens_lsp8',
+      title: 'LSP8',
+      component: nftDisplayType === 'list' ?
+        <AddressNFTs tokensQuery={ lsp8query } hasActiveFilters={ hasActiveFilters }/> :
+        <AddressCollections collectionsQuery={ collectionsQuery } address={ hash } hasActiveFilters={ hasActiveFilters }/>,
+    },
     { id: 'tokens_erc20', title: `${ config.chain.tokenStandard }-20`, component: <ERC20Tokens tokensQuery={ erc20Query }/> },
     {
       id: 'tokens_nfts',
