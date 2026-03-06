@@ -138,7 +138,7 @@ const TokenDetails = ({ tokenQuery }: Props) => {
         hint="The total amount of tokens issued"
         isLoading={ tokenQuery.isPlaceholderData }
       >
-        Max total supply
+        Current total supply
       </DetailedInfo.ItemLabel>
       <DetailedInfo.ItemValue
         alignSelf="center"
